@@ -1,0 +1,33 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{projectionstyle}[2026/08/03 Project style summary]
+
+% Core math and theorem tooling
+\RequirePackage{amsthm,amssymb}
+\RequirePackage{mathtools}
+
+% Cross-references
+\RequirePackage{hyperref}
+\RequirePackage{cleveref}
+
+% Theorem environments
+\theoremstyle{plain}
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}{Lemma}
+\newtheorem{proposition}{Proposition}
+\newtheorem{corollary}{Corollary}
+
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}
+\newtheorem{remark}{Remark}
+\newtheorem{example}[remark]{Example}
+
+% Project math operators and notation
+\DeclareMathOperator{\dist}{dist}
+\DeclareMathOperator{\spn}{span}
+\DeclareMathOperator{\adj}{adj}
+
+\DeclarePairedDelimiter{\abs}{\lvert}{\rvert}     % \abs{x} → |x|
+\DeclarePairedDelimiter{\norm}{\lVert}{\rVert}    % \norm{x} → ‖x‖
+\DeclarePairedDelimiter{\floor}{\lfloor}{\rfloor} % \floor{x} → ⌊x⌋
+\DeclarePairedDelimiter{\ceil}{\lceil}{\rceil}    % \ceil{x} → ⌈x⌉
+\DeclarePairedDelimiter{\inner}{\langle}{\rangle}  % \inner{x}{y} → ⟨x, y⟩

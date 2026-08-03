@@ -1,0 +1,494 @@
+\documentclass{IEEEtran}
+\usepackage{graphicx} % Required for inserting images
+\usepackage{projectionstyle}
+
+\title{Projection on Filtering}
+\author{Haozhan Meng}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+  This paper explores geometric connections among Gram matrices, orthogonal projections, and foundational statistical bounds, linking linear algebra with parameter estimation.
+\end{abstract}
+
+\section{Minors, angles, and the Cram\'er--Rao bound}
+\label{sec:minor-angle}
+
+\subsection{Setting and notation}
+
+Let $v_{1}, \ldots, v_{n}$ be vectors in a real inner product space $\mathcal{H}$, and let $G = [G_{ij}] \in \mathbb{R}^{n \times n}$ be their Gram matrix, defined by $G_{ij} = \inner{v_{i}, v_{j}}$. The space $\mathcal{H}$ may be finite-dimensional (such as Euclidean space) or infinite-dimensional (such as the $L^{2}$ space of random variables used later for Fisher information).
+
+The following two definitions are used throughout.
+\begin{definition}[Gram matrix]
+  For vectors $v_{1}, \ldots, v_{r} \in \mathcal{H}$, the Gram matrix is the $r \times r$ matrix
+  \begin{equation*}
+    G^{r} = \operatorname{Gram}(v_{1},\ldots,v_{r}) = \bigl[\inner{v_{i}, v_{j}}\bigr]_{i,j=1}^{r}.
+  \end{equation*}
+  In particular, $G = \operatorname{Gram}(v_{1},\ldots,v_{n})$.
+\end{definition}
+
+\begin{definition}[Bordered matrix]
+  If $A = \operatorname{Gram}(v_{1},\ldots,v_{m})$, $b_{i} = \inner{v_{i}, v_{m+1}}$, and $\gamma = \norm{v_{m+1}}^{2}$, the bordered Gram matrix obtained by appending $v_{m+1}$ is
+  \begin{equation*}
+    \operatorname{Bord}(A; b, \gamma) =
+    \begin{pmatrix}
+      A & b \\
+      b^{\prime} & \gamma
+    \end{pmatrix}
+    = \operatorname{Gram}(v_{1},\ldots,v_{m},v_{m+1}).
+  \end{equation*}
+  For this matrix, $A$ is the leading principal block while $b$ and $\gamma$ capture cross-terms and self-energy of $v$.
+\end{definition}
+
+For any $x \in \mathbb{R}^{n}$,
+\begin{equation}  \label{eq:gram-psd}
+  x^{\prime} G x
+  = \sum_{i,j} x_{i} x_{j} \inner{v_{i}, v_{j}}
+  = \norm[\Big]{\sum_{i} x_{i} v_{i}}^{2}  \ge  0
+\end{equation}
+Hence $G \succeq 0$ always, and $G \succ 0$ exactly when the $v_{k}$ are linearly independent. We assume linear independence throughout, so $G$ is invertible. Every principal submatrix of $G$ is itself a Gram matrix of a subfamily and is therefore positive definite. Consequently, all principal minors are strictly positive, so the ratios below are well defined and nonzero.
+
+Write $M_{ij}$ for the first minor obtained by deleting row $i$ and column $j$, and $C_{ij} = (-1)^{i+j} M_{ij}$ for the corresponding cofactor. The inverse entries satisfy $(G^{-1})_{ij} = C_{ji}/\det G = C_{ij}/\det G$, where the last equality follows because $G$, and therefore its cofactor matrix, is symmetric.
+
+For $v \neq 0$ and a subspace $S \subseteq \mathcal{H}$, define the angle $\theta(v, S) \in [0, \pi/2]$ by
+\begin{equation*}
+  \cos\theta = \frac{\norm{P_{S} v}}{\norm{v}},
+\end{equation*}
+where $P_{S}$ is the orthogonal projection onto $S$. Since $v = P_{S} v + (v - P_{S} v)$ is an orthogonal decomposition, the Pythagorean theorem gives $\norm{v}^{2} = \norm{P_{S} v}^{2} + \norm{v - P_{S} v}^{2}$, and therefore
+\begin{equation}
+  \sin\theta(v,S) = \frac{\dist(v, S)}{\norm{v}},
+  \quad \dist(v,S) \coloneq \norm{v - P_{S} v} .
+  \label{eq:angle-def}
+\end{equation}
+
+\subsection{The projection lemma}
+
+The next lemma is the core computational step for this section. It links orthogonal projection, the Schur complement, and determinant factorization, with the Schur complement representing residual geometry.
+
+\begin{lemma}[Projection, Schur complement, and bordered determinant]
+  \label{lem:projection}
+  Let $v_{1}, \ldots, v_{m}$ be linearly independent with Gram matrix $A \in \mathbb{R}^{m \times m}$. Let $u \in \mathcal{H}$, and define the cross-terms $b_{i} \coloneq \inner{v_{i}, u}$, the energy $\gamma \coloneq \norm{u}^{2}$, and the subspace $S \coloneq \spn\{v_{1}, \ldots, v_{m}\}$. Then
+  \begin{enumerate}
+    \item[(i)] The projection of $u$ onto $S$ is $P_{S} u = \sum_{i} c_{i} v_{i}$ where the coefficient vector is $c = A^{-1} b$;
+    \item[(ii)] The squared norm of the projection is $\norm{P_{S} u}^{2} = b^{\prime} A^{-1} b$, and the squared distance to the subspace is
+      \begin{equation}
+        \dist^{2}(u, S) = \gamma - b^{\prime} A^{-1} b \coloneq s ,
+        \label{eq:schur-dist}
+      \end{equation}
+      which is exactly the Schur complement of $A$ in the bordered Gram matrix
+      $\bar{G} \coloneq
+      \begin{pmatrix}
+        A & b \\
+        b^{\prime} & \gamma
+      \end{pmatrix}$ of $(v_{1}, \dots, v_{m}, u)$;
+    \item[(iii)] The determinant of the bordered matrix scales by this distance: $\det \bar{G} = s \det A$.
+  \end{enumerate}
+\end{lemma}
+
+\begin{proof}
+  (i) The projection is uniquely characterized by finding a vector $\hat{u} \in S$ such that the error $u - \hat{u}$ is orthogonal to $S$. Orthogonality to $S$ is equivalent to orthogonality to each basis vector $v_{i}$. Writing $\hat{u} = \sum_{i} c_{i} v_{i}$, the normal equations become:
+  \begin{equation}
+    \begin{aligned}
+      0 &= \inner{u - \hat{u}, v_{j}} \\
+      &= b_{j} - \sum_{i} c_{i}\inner{v_{i}, v_{j}}  \\
+      &= b_{j} - (A c)_{j},
+      \quad j = 1, \ldots, m,
+    \end{aligned}
+    \label{eq:normal-eq}
+  \end{equation}
+  which simplifies to the matrix equation $Ac = b$. Since $A \succ 0$ is invertible, $c = A^{-1} b$ exists and is uniquely determined.
+
+  (ii) Using the relation $Ac = b$ twice, we find the squared norm of the projection:
+  \begin{equation*}
+    \norm{\hat{u}}^{2} = c^{\prime} A c = c^{\prime} b = b^{\prime} A^{-1} b .
+  \end{equation*}
+  Since the error vector $u - \hat{u}$ is orthogonal to the projection $\hat{u}$, we apply the Pythagorean theorem to find the squared distance to the subspace:
+  \begin{equation*}
+    \dist^{2}(u,S) = \norm{u - \hat{u}}^{2}
+    = \inner{u - \hat{u}, u}
+    = \gamma - c^{\prime} b
+    = \gamma - b^{\prime} A^{-1} b .
+  \end{equation*}
+  (Expanding algebraically as $\gamma - 2c^{\prime} b + c^{\prime} A c = \gamma - 2 b^{\prime} A^{-1} b + b^{\prime} A^{-1} b$ gives the same value.) Note that $s > 0$ if and only if $u \notin S$, which matches the linear-independence requirement for the full extended family.
+
+  (iii) We can verify the block $\mathrm{LDL}^{\prime}$ factorization (the matrix equivalent of completing the square) by multiplying it out:
+  \begin{equation}    \label{eq:ldl}
+    \bar{G} =
+    \begin{pmatrix}
+      I & 0 \\
+      b^{\prime} A^{-1} & 1
+    \end{pmatrix}
+    \begin{pmatrix}
+      A & 0 \\
+      0 & s
+    \end{pmatrix}
+    \begin{pmatrix}
+      I & A^{-1} b \\
+      0 & 1
+    \end{pmatrix}
+  \end{equation}
+  The right two factors produce $\bigl(
+    \begin{smallmatrix} A & b \\ 0 & s
+  \end{smallmatrix}\bigr)$. Left-multiplying this by the first unit lower-triangular matrix reproduces the $(2,1)$ entry $b^{\prime} A^{-1} A = b^{\prime}$ and the $(2,2)$ entry $b^{\prime} A^{-1} b + s = \gamma$. Since the outer factors are unit triangular, their determinants are exactly $1$. By the multiplicativity of determinants, we obtain $\det \bar{G} = s \det A$.
+\end{proof}
+
+\subsection{The diagonal minor ratio}
+
+\begin{proposition}[Diagonal minor ratio]
+  \label{prop:minor-angle}
+  Let $\theta_{i}$ denote the angle between $v_{i}$ and the subspace $S_{-i} \coloneq \spn\{v_{k}\}_{k \neq i}$ spanned by all other vectors. Then
+  \begin{equation}
+    \frac{\det G}{M_{ii}}
+    = \dist^{2}(v_{i}, S_{-i})
+    = \norm{v_{i}}^{2} \sin^{2}\theta_{i}
+    = G_{ii}\sin^{2}\theta_{i} ,
+    \label{eq:minor-angle}
+  \end{equation}
+  and consequently, the diagonal entries of the inverse Gram matrix isolate this angular dependency:
+  \begin{equation}
+    (G^{-1})_{ii} = \frac{M_{ii}}{\det G}
+    = \frac{1}{G_{ii}\sin^{2}\theta_{i}},
+    \quad
+    \sin^{2}\theta_{i} = \frac{1}{G_{ii}\,(G^{-1})_{ii}}
+    \label{eq:inverse-entry}
+  \end{equation}
+\end{proposition}
+
+\begin{proof}
+  Let $P$ be the permutation matrix of the transposition $(i, n)$. Then $PGP^{\prime}$ is the Gram matrix of the family with $v_{i}$ and $v_{n}$ interchanged. Because $\det P = \pm 1$, we have $\det(PGP^{\prime}) = (\det P)^{2} \det G = \det G$. Deleting the last row and column of $PGP^{\prime}$ leaves the Gram matrix of $\{v_{k}\}_{k \neq i}$, whose determinant is $M_{ii}$; this is unaffected by the internal ordering of the remaining vectors. Hence, we may assume without loss of generality that $i = n$.
+
+  Apply \Cref{lem:projection} with $A = G^{n-1} = \operatorname{Gram}(v_{1},\ldots,v_{n-1})$, $b_{i} = \inner{v_{i}, v_{n}}$ for $i = 1, \ldots, n-1$, $\gamma = \norm{v_{n}}^{2} = G_{nn}$, $S = S_{-n}$, $\bar{G} = G$, and $M_{nn} = \det G^{n-1}$.
+
+  Part (iii) gives $\det G = M_{nn}  s$, and Part (ii) identifies $s = \dist^{2}(v_{n}, S_{-n})$, which by \eqref{eq:angle-def} equals $G_{nn}\sin^{2}\theta_{n}$. This establishes the first equation.
+
+  For the second equation, recall from $G^{-1} = \frac{1}{\det G}\adj(G)$ that $(G^{-1})_{nn} = C_{nn} / \det G$. Since $C_{nn} = (-1)^{2n} M_{nn} = M_{nn}$, we directly get $(G^{-1})_{nn} = M_{nn}/\det G = 1/s$.
+\end{proof}
+
+The next two remarks provide consistency checks and clarify the statistical meaning of the result.
+
+\begin{remark}[Cauchy--Schwarz and the range of the ratio]
+  \label{rem:cs-check}
+  Applying the Cauchy--Schwarz inequality in $\mathbb{R}^{n}$ to the dual pair $G^{1/2} e_{i}$ and $G^{-1/2} e_{i}$,
+  \begin{equation}\label{eq:kantorovich-lite}
+    \begin{aligned}
+      1 = e_{i}^{\prime} e_{i} &= \inner{G^{1/2} e_{i}, G^{-1/2} e_{i}} \\
+      &\le  \norm{G^{1/2} e_{i}} \norm{G^{-1/2} e_{i}} = \sqrt{G_{ii}(G^{-1})_{ii}} ,
+    \end{aligned}
+  \end{equation}
+  so $G_{ii}(G^{-1})_{ii} \ge 1$, confirming that our rearranged equation indeed returns a valid geometric sine $\sin^{2}\theta_{i} \le 1$. Equality forces $G^{1/2}e_{i} \parallel G^{-1/2}e_{i}$, meaning $G e_{i} = \lambda e_{i}$. In other words, the $i$-th column of $G$ vanishes off the diagonal, implying $v_{i} \perp S_{-i}$ and $\theta_{i} = \pi/2$ (perfect orthogonality).
+\end{remark}
+
+\begin{remark}[Multiple correlation and VIF]
+  \label{rem:R2}
+  Let $g_{k} \coloneq \inner{v_{k}, v_{i}}$ for $k \neq i$, and let $G^{-i}$ be the Gram matrix of $\{v_{k}\}_{k\neq i}$. \Cref{lem:projection}(ii) gives $\norm{P_{S_{-i}} v_{i}}^{2} = g^{\prime} (G^{-i})^{-1} g$. The squared multiple correlation---which measures how much variance of $v_{i}$ is explained by the remaining vectors---is:
+  \begin{equation}
+    R_{i}^{2} \coloneq \frac{\norm{P_{S_{-i}} v_{i}}^{2}}{\norm{v_{i}}^{2}}
+    = \frac{g^{\prime} (G^{-i})^{-1} g}{G_{ii}}
+    = \cos^{2}\theta_{i} ,
+    \label{eq:R2}
+  \end{equation}
+  hence
+  \begin{equation*}
+    \sin^{2}\theta_{i} = 1 - R_{i}^{2}
+  \end{equation*}
+  In regression diagnostics, the factor $1/(1-R_{i}^{2})$ is recognized as the Variance Inflation Factor (VIF). Geometrically, as the vector $v_{i}$ becomes highly collinear with the other predictors ($R_{i}^{2} \to 1$), the angle $\theta_{i}$ approaches zero. The VIF measures exactly how much the variance of an estimated regression coefficient increases due to this collinearity compared to an orthogonal baseline.
+\end{remark}
+
+\begin{corollary}[Sequential factorization and Hadamard's inequality]
+  \label{cor:hadamard}
+  Let $V^{k-1} \coloneq \spn\{v_{1},\dots,v_{k-1}\}$ (with $V^{0} = \{0\}$) and $\phi_{k} \coloneq \theta(v_{k}, V^{k-1})$. Then the total volume of the parallelotope formed by the vectors is bounded by the product of their lengths:
+  \begin{equation}    \label{eq:hadamard}
+    \det G = \prod_{k=1}^{n} \dist^{2}(v_{k}, V^{k-1})
+    = \prod_{k=1}^{n} G_{kk} \sin^{2}\phi_{k}
+    \le  \prod_{k=1}^{n} G_{kk}
+  \end{equation}
+\end{corollary}
+
+\begin{proof}
+  We use induction on $n$ with \Cref{lem:projection}(iii). The Gram matrix of $v_{1},\ldots,v_{k}$ is the bordering of the Gram matrix of $v_{1},\ldots,v_{k-1}$ by $v_{k}$. Thus, its determinant is the previous determinant multiplied by the squared orthogonal distance $\dist^{2}(v_{k}, V^{k-1})$. The base case $n=1$ is trivially $\det G = \norm{v_{1}}^{2}$. The inequality follows from $\sin^{2}\phi_{k} \le 1$, with equality holding throughout if and only if the family is mutually orthogonal.
+\end{proof}
+
+There is a fundamental asymmetry between \eqref{eq:hadamard} and \eqref{eq:minor-angle}: the angles $\phi_{k}$ are \emph{sequential} (each vector is evaluated only against its predecessors and therefore depends strongly on ordering), whereas $\theta_{i}$ is defined against \emph{all} other vectors. Only $\theta_{i}$ is permutation invariant, and only it answers how independently coordinate $i$ is determined.
+
+\subsection{Off-diagonal entries: the dual basis and partial correlation}
+
+\begin{remark}[Dual basis and residuals]\label{rem:dual-basis}
+  Let $r_{i} \coloneq v_{i} - P_{S_{-i}} v_{i}$ be the residual from \Cref{prop:minor-angle}, and define the dual family $w_{i} \coloneq \sum_{k} (G^{-1})_{ki} v_{k}$. The inner products of this dual basis with the primal basis yield the Kronecker delta:
+  \begin{align}
+    \inner{w_{i}, v_{j}}
+    &= \sum_{k} (G^{-1})_{ki} \inner{v_{k}, v_{j}}
+    = \sum_{k} G_{jk}(G^{-1})_{ki}
+    \notag\\
+    &= (G G^{-1})_{ji} = \delta_{ij},
+    \label{eq:dual-biorth}\\
+    \inner{w_{i}, w_{j}}
+    &= \sum_{k,\ell} (G^{-1})_{ki} (G^{-1})_{\ell j} G_{k\ell}
+    \notag\\
+    &= (G^{-1} G G^{-1})_{ij} = (G^{-1})_{ij},
+    \label{eq:dual-gram}
+  \end{align}
+  showing that $G^{-1}$ is itself the Gram matrix of the dual basis. Moreover, the dual basis vectors are proportional to the residuals:
+  \begin{equation}
+    w_{i} = \frac{r_{i}}{\norm{r_{i}}^{2}} .
+    \label{eq:dual-residual}
+  \end{equation}
+  To see this, note that $\inner{w_{i}, v_{j}} = \delta_{ij}$ means $w_{i} \perp v_{j}$ for every $j \neq i$, hence $w_{i} \perp S_{-i}$. Also $w_{i} \in V \coloneq \spn\{v_{1},\ldots,v_{n}\}$. Since $\dim V - \dim S_{-i} = 1$, the orthogonal complement of $S_{-i}$ inside $V$ is a single line, which contains both $w_{i}$ and the non-zero residual $r_{i} \neq 0$. Thus $w_{i} = c r_{i}$. Pairing with $v_{i}$ using $\inner{r_{i}, v_{i}} = \inner{r_{i}, r_{i} + P_{S_{-i}}v_{i}} = \norm{r_{i}}^{2}$ yields $1 = c \norm{r_{i}}^{2}$.
+
+  Taking $j = i$ in \eqref{eq:dual-gram} recovers $(G^{-1})_{ii} = 1/\norm{r_{i}}^{2}$, in agreement with \Cref{prop:minor-angle}. Taking $j \neq i$ and normalizing yields the geometric cosine between residuals:
+  \begin{equation}
+    \frac{(G^{-1})_{ij}}{\sqrt{(G^{-1})_{ii}(G^{-1})_{jj}}}
+    = \frac{\inner{r_{i}, r_{j}}}{\norm{r_{i}}\norm{r_{j}}}
+    = \cos \angle (r_{i}, r_{j}) .
+    \label{eq:cos-full-residual}
+  \end{equation}
+\end{remark}
+
+\begin{proposition}[Off-diagonal ratio and partial correlation]
+  \label{prop:partial-corr}
+  Fix $i \neq j$, let $S_{-i,-j} \coloneq \spn\{v_{k}\}_{k \neq i,j}$ (the ``control'' subspace), and let $\tilde{r}_{i} \coloneq v_{i} - P_{S_{-i,-j}} v_{i}$ and $\tilde{r}_{j} \coloneq v_{j} - P_{S_{-i,-j}} v_{j}$ be the residuals after projecting out only the other $n-2$ vectors. Then the partial correlation---the correlation between $v_{i}$ and $v_{j}$ after removing the linear effects of all other variables---is:
+  \begin{equation} \label{eq:partial-corr}
+    \begin{aligned}
+      \rho_{ij \cdot \mathrm{rest}}
+      &\coloneq \cos\angle(\tilde{r}_{i}, \tilde{r}_{j}) \\
+      &= \frac{-(G^{-1})_{ij}}{\sqrt{(G^{-1})_{ii}(G^{-1})_{jj}}} \\
+      &= \frac{-(-1)^{i+j} M_{ij}}{\sqrt{M_{ii} M_{jj}}}
+    \end{aligned}
+  \end{equation}
+\end{proposition}
+
+\begin{proof}
+  Reorder the system so that $i, j$ are the last two indices, and partition the matrix into blocks:
+  \begin{align*}
+    G &=
+    \begin{pmatrix}
+      A & B \\ B^{\prime} & D
+    \end{pmatrix},
+    \quad
+    A \in \mathbb{R}^{(n-2)\times(n-2)},\\
+    B_{ka} &= \inner{v_{k}, v_{a}},\quad
+    D_{ab} = \inner{v_{a}, v_{b}},
+  \end{align*}
+  where $k$ ranges over the $n-2$ remaining indices and $a,b \in \{i,j\}$. Block inversion (the $2\times 2$ block version of the $\mathrm{LDL}^{\prime}$ factorization) dictates that the trailing block of $G^{-1}$ is the inverse of the Schur complement:
+  \begin{equation}
+    [(G)^{-1}]_{\{i,j\}} = H^{-1},
+    \qquad H \coloneq D - B^{\prime} A^{-1} B
+    \label{eq:block-inverse}
+  \end{equation}
+  Here, $H$ is precisely the Gram matrix of $(\tilde{r}_{i}, \tilde{r}_{j})$. By \Cref{lem:projection}(i), $P_{S_{-i,-j}} v_{a} = \sum_{k} c^{(a)}_{k} v_{k}$ with $c^{(a)} = A^{-1} B_{\cdot a}$. Because the error $\tilde{r}_{a}$ is orthogonal to the control subspace $S_{-i,-j}$ while the projection $v_{b} - \tilde{r}_{b} \in S_{-i,-j}$, we get:
+  \begin{equation*}
+    \begin{aligned}
+      \inner{\tilde{r}_{a}, \tilde{r}_{b}}
+      &= \inner{\tilde{r}_{a}, v_{b}} \\
+      &= D_{ab} - (c^{(a)})^{\prime} B_{\cdot b} \\
+      &= D_{ab} - B_{\cdot a}^{\prime} A^{-1} B_{\cdot b} \\
+      &= H_{ab}.
+    \end{aligned}
+  \end{equation*}
+  For a $2\times2$ symmetric matrix $H$, the adjugate matrix is $\bigl(
+    \begin{smallmatrix} H_{22} & -H_{12}\\ -H_{12} & H_{11}
+  \end{smallmatrix}\bigr)$. Thus, $\det H$ naturally cancels out in the normalized ratio:
+  \begin{equation*}
+    \frac{-(H^{-1})_{12}}{\sqrt{(H^{-1})_{11}(H^{-1})_{22}}}
+    = \frac{H_{12}/\det H}{\sqrt{H_{11}H_{22}}/\det H}
+    = \frac{\inner{\tilde{r}_{i}, \tilde{r}_{j}}}
+    {\norm{\tilde{r}_{i}} \norm{\tilde{r}_{j}}}
+  \end{equation*}
+  Substituting \eqref{eq:block-inverse} and rewriting $(G^{-1})_{ij} = C_{ij}/\det G$ in cofactor form yields \eqref{eq:partial-corr}.
+\end{proof}
+
+The minus sign in \eqref{eq:partial-corr} is not an arbitrary statistical convention: it comes directly from the off-diagonal sign of the $2 \times 2$ adjugate. Comparing \eqref{eq:cos-full-residual} with \eqref{eq:partial-corr} reveals a geometric sign flip:
+\begin{equation}
+  \cos\angle(r_{i}, r_{j}) = -\cos\angle(\tilde{r}_{i}, \tilde{r}_{j}) .
+  \label{eq:sign-flip}
+\end{equation}
+This highlights that the residuals in \Cref{prop:minor-angle} are \emph{not} the same as those in \Cref{prop:partial-corr}. Additionally, projecting $v_{j}$ out of $v_{i}$ (and vice versa) reverses the sign of the cosine, and the leading minus sign in the partial-correlation formula compensates for this reversal.
+
+\begin{example}[$n = 2$]
+  \label{ex:n2}
+  For a basic bivariate system $G = \bigl(
+    \begin{smallmatrix} 1 & \rho \\ \rho & 1
+  \end{smallmatrix}\bigr)$, we compute the inverse $G^{-1} = (1-\rho^{2})^{-1}\bigl(
+    \begin{smallmatrix} 1 & -\rho \\ -\rho & 1
+  \end{smallmatrix}\bigr)$. \Cref{prop:partial-corr} returns $\rho_{12} = \rho$ (as there are no other variables $S_{ij}$ to partial out).
+
+  Meanwhile, the individual residuals from projecting onto each other are $r_{1} = v_{1} - \rho v_{2}$ and $r_{2} = v_{2} - \rho v_{1}$. These satisfy $\inner{r_{1}, r_{2}} = -\rho(1-\rho^{2})$ and $\norm{r_{k}}^{2} = 1-\rho^{2}$, giving $\cos\angle(r_{1},r_{2}) = -\rho$, which illustrates the sign flip in \eqref{eq:sign-flip}. We also observe $\sin^{2}\theta_{1} = 1 - \rho^{2}$ and $(G^{-1})_{11} = 1/(1-\rho^{2})$, matching the VIF formulation.
+\end{example}
+
+\subsection{The Cram\'er--Rao bound}
+
+We now translate this geometry into statistical estimation and quantify how correlated nuisance parameters limit attainable accuracy.
+
+\begin{definition}[Cram\'er--Rao bound]
+  Let $\theta \in \mathbb{R}^{n}$ parameterize a statistical model with Fisher information matrix $\mathbf{F}(\theta)$. For any unbiased estimator $\hat{\theta}$ of $\theta$, the covariance matrix satisfies
+  \begin{equation*}
+    \operatorname{Cov}(\hat{\theta}) \succeq \mathbf{F}(\theta)^{-1}
+  \end{equation*}
+  In particular, the variance of each component obeys
+  \begin{equation*}
+    \operatorname{Var}(\hat{\theta}_{i}) \ge (\mathbf{F}^{-1})_{ii}
+  \end{equation*}
+  and the right-hand side is called the Cram\'er--Rao bound (CRB) for $\theta_{i}$.
+\end{definition}
+
+\begin{corollary}[Nuisance penalty in the Cram\'er--Rao bound]
+  \label{cor:crb}
+  Let $\mathbf{F}$ be the Fisher information matrix for a parameter vector $\theta \in \mathbb{R}^{n}$. By definition, $\mathbf{F}_{k\ell} = \mathbb{E}\bigl[\partial_{k} \log p   \partial_\ell \log p\bigr]$ is the Gram matrix of the score functions $\dot{\ell}_{k} \coloneq \partial_{k} \log p$ in the Hilbert space $L^{2}(p)$ under the inner product $\inner{a, b} \coloneq \mathbb{E}[ab]$. Then the minimum variance of an unbiased estimator is bounded by:
+  \begin{equation}\label{eq:crb-angle}
+    \begin{aligned}
+      \operatorname{CRB}(\theta_{i})
+      &= (\mathbf{F}^{-1})_{ii}
+      = \frac{M_{ii}}{\det \mathbf{F}} \\
+      &= \underbrace{\frac{1}{\mathbf{F}_{ii}}}_{\substack{\text{single-parameter}\\\text{bound}}}
+      \cdot
+      \underbrace{\frac{1}{\sin^{2}\theta_{i}}}_{\substack{\text{nuisance}\\\text{penalty}}}
+      = \frac{1}{\mathbf{F}_{ii}(1 - R_{i}^{2})}
+    \end{aligned}
+  \end{equation}
+  Here, $\theta_{i}$ is the angle in $L^{2}(p)$ between the $i$-th score and the span of the nuisance scores. The penalty equals unity if and only if the $i$-th score is orthogonal to all others (parameter orthogonality). It diverges as $\csc^{2}\theta_{i}$ in the ill-conditioned regime where $\det \mathbf{F} \to 0$ while $M_{ii}$ is bounded away from zero.
+\end{corollary}
+
+\begin{proof}
+  Under usual regularity conditions (e.g., the density $p_\theta > 0$, ability to swap differentiation and integration), the score functions lie in $L^{2}(p)$ with a mean of zero, $\mathbb{E}[\dot{\ell}_{k}] = 0$. Consequently, $\mathbf{F}$ serves simultaneously as their covariance matrix and their geometric Gram matrix. The result follows directly by substituting $v_{k} = \dot{\ell}_{k}$ into \Cref{prop:minor-angle} and utilizing the multiple correlation equivalence.
+\end{proof}
+
+\begin{remark}[Efficient score]
+  \label{rem:efficient-score}
+  Let $\dot{\ell}_{i}^{*} \coloneq \dot{\ell}_{i} - P_{S_{i}}\dot{\ell}_{i}$ be the residual of the $i$-th score after orthogonally projecting out the nuisance scores. This is known in semiparametric theory as the \emph{efficient score} for $\theta_{i}$. By \Cref{prop:minor-angle}:
+  \begin{equation}
+    \operatorname{CRB}(\theta_{i})
+    = \frac{1}{\norm{\dot{\ell}_{i}^{*}}^{2}}
+    = \frac{1}{\mathbb{E}\bigl[(\dot{\ell}_{i}^{*})^{2}\bigr]}
+    \label{eq:efficient-score}
+  \end{equation}
+  This highlights a key statistical point: the achievable accuracy of estimating $\theta_{i}$ is determined not by the total sensitivity of the likelihood to $\theta_{i}$, but \emph{only} by the part of that sensitivity that nuisance parameters cannot mimic. It also shows that the penalty is a property of the \emph{subspace} $S_{i}$, not of a particular parametrization of the nuisance block. Any reparametrization that keeps $\theta_{i}$ fixed while re-coordinatizing nuisance variables leaves $S_{i}$---and therefore $\theta_{i}$ and the optimal bound---unchanged.
+\end{remark}
+
+\begin{example}[Linear Gaussian model / collinearity]
+  \label{ex:linear-gaussian}
+  Let $y = A\theta + \varepsilon$ with $\varepsilon - \mathcal{N}(0, \sigma^{2} I)$ and $A = [a_{1}, \dots, a_{n}]$ having full column rank. Then the log-likelihood is $\log p = -\norm{y - A\theta}^{2}/(2\sigma^{2}) + \mathrm{const}$. The score functions take the form $\dot{\ell}_{k} = a_{k}^{\prime} (y - A\theta)/\sigma^{2}$, leading to:
+  \begin{equation*}
+    \mathbf{F}_{k\ell}
+    = \frac{a_{k}^{\prime} \,\mathbb{E}\bigl[(y-A\theta)(y-A\theta)^{\prime}\bigr]\, a_\ell}
+    {\sigma^{4}}
+    = \frac{a_{k}^{\prime} a_\ell}{\sigma^{2}}
+  \end{equation*}
+  Thus, the Fisher information matrix is the regressor Gram matrix $A^{\prime} A$ scaled by the noise variance. In this context, $\theta_{i}$ corresponds to the geometric angle in $\mathbb{R}^{m}$ between the column vector $a_{i}$ and the span of the remaining columns. Consequently:
+  \begin{equation} \label{eq:vif}
+    \operatorname{CRB}(\theta_{i})
+    = \frac{\sigma^{2}}{\norm{a_{i}}^{2} \sin^{2}\theta_{i}}
+    = \frac{\sigma^{2}}{\norm{a_{i}}^{2}}\cdot\frac{1}{1 - R_{i}^{2}}
+  \end{equation}
+  Collinearity appears as a small angle. The regressor energy $\norm{a_{i}}^{2}$ (representing the signal strength of that variable) may be large, but if the vector lies too close to the hyperplane spanned by the other variables, the parameter estimate remains unreliable.
+
+  \emph{Note on Regularization:} This geometric collapse is exactly why techniques like Ridge regression (Tikhonov regularization) add a penalty term $\lambda I$ to the Gram matrix. Geometrically, this artificially inflates the lengths and angles, bounding the variance at the cost of introducing bias. The exact same geometry governs closely spaced components in superresolution problems (like separating two closely spaced point sources in optics), where $\sin\theta_{i} \to 0$ as separation shrinks, causing the theoretical error bounds to blow up even at fixed signal-to-noise ratios.
+\end{example}
+
+\begin{remark}[Diagnostics and computational stability]
+  \label{rem:diagnostics}
+  The Cram\'er--Rao formulation clearly shows that the determinant $\det\mathbf{F}$ alone---which is maximized in the D-optimality design criterion---cannot successfully pinpoint \emph{which} parameter is poorly determined. By \Cref{cor:hadamard}, the determinant aggregates the sequential angles into a single overall volume metric. A small parallelotope volume communicates that the system is ill-conditioned, but says nothing about which coordinate is failing.
+
+  The true diagnostic quantity is the ratio $M_{ii}/\det\mathbf{F}$, not either factor in isolation. Numerically, however, calculating explicit determinants and minors is disastrous due to floating-point underflow/overflow and $O(n!)$ naive complexity.
+
+  Instead, computationally stable diagnostics compute the Cholesky factorization $\mathbf{F} = LL^{\prime}$ in $O(n^{3})$ operations. One can then obtain the inverse diagonal entries $(\mathbf{F}^{-1})_{ii} = \norm{L^{-1}e_{i}}^{2}$ via standard forward/backward triangular solves, and finally read off the geometric angles using $\sin^{2}\theta_{i} = 1/(\mathbf{F}_{ii}(\mathbf{F}^{-1})_{ii})$.
+\end{remark}
+
+\section{Application to Gaussian random vectors}
+\label{sec:gaussian-vectors}
+
+The projection-and-Gram framework has a natural application to multivariate normal models. With an appropriate inner product on random variables, algebraic identities for minors and inverses become statistical statements about conditional dependence and optimal prediction.
+
+\subsection{The geometry of conditional expectation}
+
+Let $X = (X_{1}, \dots, X_{n})^{\prime}$ be a random vector drawn from a multivariate normal distribution $\mathcal{N}(\mu, \Sigma)$, where we assume the covariance matrix $\Sigma \succ 0$ is strictly positive definite. Without loss of generality, we assume $\mu = 0$, as shifting the mean does not affect variances or covariances.
+
+Consider the Hilbert space $L^{2}(P)$ of zero-mean, finite-variance random variables, equipped with the covariance inner product:
+\begin{equation}
+  \inner{U, V} \coloneq \mathbb{E}[U V] = \operatorname{Cov}(U, V)
+\end{equation}
+Under this geometry, the covariance matrix $\Sigma$ is exactly the Gram matrix $G$ of the variables $X_{1}, \dots, X_{n}$. The squared norm of a variable is its variance, $\norm{X_{i}}^{2} = \operatorname{Var}(X_{i}) = \Sigma_{ii}$, and the cosine of the angle between two variables is exactly their Pearson correlation coefficient:
+\begin{equation}
+  \cos \angle(X_{i}, X_{j})
+  = \frac{\inner{X_{i}, X_{j}}}{\norm{X_{i}} \norm{X_{j}}}
+  = \frac{\operatorname{Cov}(X_{i}, X_{j})}{\sqrt{\operatorname{Var}(X_{i})\operatorname{Var}(X_{j})}}
+  = \rho_{ij} .
+\end{equation}
+For Gaussian random vectors, a remarkable property holds: orthogonal projection of a variable onto a subspace generated by other variables is equivalent to its \emph{conditional expectation}.
+
+If $S_{-i} \coloneq \spn\{X_{k}\}_{k \neq i}$ is the subspace spanned by all other variables (denoted collectively as $X_{- i}$), the projection is:
+\begin{equation}
+  P_{S_{-i}} X_{i} = \mathbb{E}[X_{i} \mid X_{- i}]
+\end{equation}
+Because the projection is linear, the conditional expectation of a Gaussian is always a linear combination of the conditioning variables.
+
+\subsection{The precision matrix and conditional variance}
+
+Let $\Theta \coloneq \Sigma^{-1}$ be the inverse covariance matrix, also called the \emph{precision matrix}. Applying \Cref{prop:minor-angle} in this setting gives a direct statistical interpretation of its diagonal entries.
+
+\begin{corollary}[Diagonal of the precision matrix]
+  \label{cor:precision-diag}
+  The squared distance from $X_{i}$ to the subspace $S_{-i}$ represents the variance of the residual error, which is exactly the conditional variance of $X_{i}$ given all other variables:
+  \begin{equation}
+    \dist^{2}(X_{i}, S_{-i})
+    = \mathbb{E}\bigl[(X_{i} - \mathbb{E}[X_{i} \mid X_{- i}])^{2}\bigr]
+    = \operatorname{Var}(X_{i} \mid X_{- i})
+  \end{equation}
+  Following \Cref{prop:minor-angle}, the diagonal entries of the precision matrix isolate this conditional variance:
+  \begin{equation}
+    \Theta_{ii} = (\Sigma^{-1})_{ii} = \frac{1}{\operatorname{Var}(X_{i} \mid X_{- i})}
+  \end{equation}
+\end{corollary}
+
+Using the angular formulation from \Cref{prop:minor-angle}, we can also express this as:
+\begin{equation}
+  \operatorname{Var}(X_{i} \mid X_{- i})
+  = \operatorname{Var}(X_{i}) \sin^{2}\theta_{i}
+  = \operatorname{Var}(X_{i}) (1 - R_{i}^{2})
+\end{equation}
+where $R_{i}^{2}$ is the proportion of variance of $X_{i}$ explained by all other variables. If $X_{i}$ is highly correlated with the rest of the network ($\sin\theta_{i} \to 0$), the conditional variance shrinks toward zero, and the precision $\Theta_{ii}$ blows up to infinity.
+
+\subsection{Partial correlation and Gaussian graphical models}
+
+We now apply \Cref{prop:partial-corr} to interpret the off-diagonal entries of the precision matrix. Let $\tilde{r}_{i}$ and $\tilde{r}_{j}$ be the residuals of $X_{i}$ and $X_{j}$ after projecting out the control subspace $S_{-i,-j} \coloneq \spn\{X_{k}\}_{k \neq i,j}$. In probability terms, these are the prediction errors:
+\begin{equation}
+  \tilde{r}_{i} = X_{i} - \mathbb{E}[X_{i} \mid X_{- i,-j}], \qquad
+  \tilde{r}_{j} = X_{j} - \mathbb{E}[X_{j} \mid X_{- i,-j}]
+\end{equation}
+The correlation between these residuals is the \emph{partial correlation}, denoted $\rho_{ij \cdot \mathrm{rest}}$. It measures the linear dependence between $X_{i}$ and $X_{j}$ that cannot be explained by the other variables.
+
+\begin{corollary}[Off-diagonal precision and partial correlation]
+  \label{cor:precision-offdiag}
+  The partial correlation between $X_{i}$ and $X_{j}$ given all other variables is given by the scaled off-diagonal entries of the precision matrix:
+  \begin{equation}
+    \rho_{ij \setminus \mathrm{rest}}
+    = \frac{-\Theta_{ij}}{\sqrt{\Theta_{ii} \Theta_{jj}}}
+  \end{equation}
+\end{corollary}
+
+This equation underpins Gaussian graphical models (GGMs): for jointly Gaussian variables, zero correlation implies statistical independence. Therefore, if the partial correlation is zero, the residuals are independent, meaning $X_{i}$ and $X_{j}$ are \emph{conditionally independent} given the rest of the network:
+\begin{equation}
+  \Theta_{ij} = 0 \iff X_{i} \perp\!\!\!\perp X_{j} \mid X_{- i,-j}
+\end{equation}
+Geometrically, $\Theta_{ij} = 0$ means that after projecting out the shared environment $S_{-i,-j}$, the remaining variations of $X_{i}$ and $X_{j}$ are orthogonal.
+
+\subsection{Information geometry and entropy}
+
+Finally, \Cref{cor:hadamard} can be interpreted in information-theoretic terms. The differential entropy of an $n$-dimensional Gaussian vector is:
+\begin{equation}
+  h(X)
+  = \frac{1}{2} \log\det(2\pi e \Sigma)
+  = \frac{n}{2} \log(2\pi e) + \frac{1}{2} \log\det\Sigma
+\end{equation}
+Because $\det \Sigma$ factors sequentially into the squared distances (conditional variances), we have:
+\begin{equation}
+  \det \Sigma = \prod_{k=1}^{n} \operatorname{Var}(X_{k} \mid X_{1}, \ldots, X_{k-1})
+\end{equation}
+Taking the logarithm transforms this geometric volume factorization directly into the chain rule of conditional entropy:
+\begin{equation}
+  h(X_{1}, \dots, X_{n}) = \sum_{k=1}^{n} h(X_{k} \mid X_{1}, \ldots, X_{k-1})
+\end{equation}
+Hadamard's inequality ($\det \Sigma \le \prod \Sigma_{kk}$) geometrically states that the volume of a parallelotope is maximized when its sides are orthogonal. Information-theoretically, this is the well-known theorem that for a given set of marginal variances, the joint entropy is maximized when the variables are completely independent.
+
+\end{document}
