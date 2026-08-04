@@ -1,0 +1,26 @@
+# LaTeX intermediate and output files
+*.aux
+*.bbl
+*.blg
+*.brf
+*.fls
+*.fdb_latexmk
+*.log
+*.nav
+*.out
+*.pdf
+*.snm
+*.synctex.gz
+*.toc
+*.xdv
+*.spl
+*.run.xml
+*.synctex
+*.lof
+*.lot
+*.bcf
+*~
+# Output from minted and similar packages
+_minted-* 
+# Editor files
+.vscode/
