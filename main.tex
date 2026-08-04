@@ -121,24 +121,22 @@ The next lemma is the core computational step for this section. It links orthogo
   (Expanding algebraically as $\gamma - 2c^{\prime} b + c^{\prime} A c = \gamma - 2 b^{\prime} A^{-1} b + b^{\prime} A^{-1} b$ gives the same value.) Note that $s > 0$ if and only if $u \notin S$, which matches the linear-independence requirement for the full extended family.
 
   (iii) We can verify the block $\mathrm{LDL}^{\prime}$ factorization (the matrix equivalent of completing the square) by multiplying it out:
-  \begin{equation}    \label{eq:ldl}
+  \begin{equation} \label{eq:ldl}
     \bar{G} =
-    \begin{pmatrix}
+    \begin{bmatrix}
       I & 0 \\
       b^{\prime} A^{-1} & 1
-    \end{pmatrix}
-    \begin{pmatrix}
+    \end{bmatrix}
+    \begin{bmatrix}
       A & 0 \\
       0 & s
-    \end{pmatrix}
-    \begin{pmatrix}
+    \end{bmatrix}
+    \begin{bmatrix}
       I & A^{-1} b \\
       0 & 1
-    \end{pmatrix}
+    \end{bmatrix}
   \end{equation}
-  The right two factors produce $\bigl(
-    \begin{smallmatrix} A & b \\ 0 & s
-  \end{smallmatrix}\bigr)$. Left-multiplying this by the first unit lower-triangular matrix reproduces the $(2,1)$ entry $b^{\prime} A^{-1} A = b^{\prime}$ and the $(2,2)$ entry $b^{\prime} A^{-1} b + s = \gamma$. Since the outer factors are unit triangular, their determinants are exactly $1$. By the multiplicativity of determinants, we obtain $\det \bar{G} = s \det A$.
+  where $b^{\prime} A^{-1} b + s = \gamma$. Since the outer factors are unit triangular, their determinants are exactly $1$. By the multiplicativity of determinants, we obtain $\det \bar{G} = s \det A$.
 \end{proof}
 
 \subsection{The diagonal minor ratio}
@@ -283,13 +281,14 @@ There is a fundamental asymmetry between \eqref{eq:hadamard} and \eqref{eq:minor
   where $k$ ranges over the $n-2$ remaining indices. Block inversion (the $2\times 2$ block version of the $\mathrm{LDL}^{\prime}$ factorization) dictates that the trailing block of $G^{-1}$ is the inverse of the Schur complement:
   \begin{equation}
     [(G)^{-1}]_{n-1:n,n-1:n} = H^{-1},
-    \qquad H \coloneq D - B^{\prime} A^{-1} B
+    \quad H \coloneq D - B^{\prime} A^{-1} B
     \label{eq:block-inverse}
   \end{equation}
   Here, $H$, denoted by
   $
   \begin{bmatrix}
-    H_{1,1} & H_{1,2} \\ H_{2,1} & H_{2,2}
+    H_{1,1} & H_{1,2} \\
+    H_{2,1} & H_{2,2}
   \end{bmatrix}$ is precisely the Gram matrix of $(\tilde{r}_{n-1}, \tilde{r}_{n})$. By \Cref{lem:projection}(i), $P_{S_{-i,-j}} v_{n-1} = \sum_{k=1}^{n-2} c^{(n-1)}_{k} v_{k}$ with $c^{(n-1)} = A^{-1} B_{:,n-1}$. Because the error $\tilde{r}_{n-1}$ is orthogonal to the control subspace $S_{-i,-j}$ while the projection $v_{n} - \tilde{r}_{n} \in S_{-i,-j}$, we get:
   \begin{equation*}
     \begin{aligned}
@@ -300,9 +299,14 @@ There is a fundamental asymmetry between \eqref{eq:hadamard} and \eqref{eq:minor
       &= H_{1,2}
     \end{aligned}
   \end{equation*}
-  Since $H$ is of size $2 \times 2$, the adjugate matrix of $H$ is $
-  \begin{bmatrix} H_{2,2} & -H_{1,2}\\ -H_{1,2} & H_{1,1}
-  \end{bmatrix}$. Thus, $\det H$ naturally cancels out in the normalized ratio:
+  Since $H$ is of size $2 \times 2$, the adjugate matrix of $H$ is
+  \begin{equation*}
+    \begin{bmatrix}
+      H_{2,2} & -H_{1,2}\\
+      -H_{1,2} & H_{1,1}
+    \end{bmatrix}
+  \end{equation*}
+  Thus, $\det H$ naturally cancels out in the normalized ratio:
   \begin{equation*}
     \frac{-(H^{-1})_{12}}{\sqrt{(H^{-1})_{11}(H^{-1})_{22}}}
     = \frac{H_{12}/\det H}{\sqrt{H_{11}H_{22}}/\det H}
@@ -313,19 +317,22 @@ There is a fundamental asymmetry between \eqref{eq:hadamard} and \eqref{eq:minor
 \end{proof}
 
 The minus sign in \eqref{eq:partial-corr} is not an arbitrary statistical convention: it comes directly from the off-diagonal sign of the $2 \times 2$ adjugate. Comparing \eqref{eq:cos-full-residual} with \eqref{eq:partial-corr} reveals a geometric sign flip:
-\begin{equation}
-  \cos\angle(r_{i}, r_{j}) = -\cos\angle(\tilde{r}_{i}, \tilde{r}_{j}) .
-  \label{eq:sign-flip}
+\begin{equation}  \label{eq:sign-flip}
+  \cos\angle(r_{i}, r_{j}) = -\cos\angle(\tilde{r}_{i}, \tilde{r}_{j})
 \end{equation}
 This highlights that the residuals in \Cref{prop:minor-angle} are \emph{not} the same as those in \Cref{prop:partial-corr}. Additionally, projecting $v_{j}$ out of $v_{i}$ (and vice versa) reverses the sign of the cosine, and the leading minus sign in the partial-correlation formula compensates for this reversal.
 
 \begin{example}[$n = 2$]
   \label{ex:n2}
-  For a basic bivariate system $G = \bigl(
-    \begin{smallmatrix} 1 & \rho \\ \rho & 1
-  \end{smallmatrix}\bigr)$, we compute the inverse $G^{-1} = (1-\rho^{2})^{-1}\bigl(
-    \begin{smallmatrix} 1 & -\rho \\ -\rho & 1
-  \end{smallmatrix}\bigr)$. \Cref{prop:partial-corr} returns $\rho_{12} = \rho$ (as there are no other variables $S_{ij}$ to partial out).
+  For a basic bivariate system $G =
+  \begin{bmatrix}
+    1 & \rho \\
+    \rho & 1
+  \end{bmatrix}$, we compute the inverse $G^{-1} = (1-\rho^{2})^{-1}
+  \begin{bmatrix}
+    1 & -\rho \\
+    -\rho & 1
+  \end{bmatrix}$. \Cref{prop:partial-corr} returns $\rho_{12} = \rho$ (as there are no other variables $S_{ij}$ to partial out).
 
   Meanwhile, the individual residuals from projecting onto each other are $r_{1} = v_{1} - \rho v_{2}$ and $r_{2} = v_{2} - \rho v_{1}$. These satisfy $\inner{r_{1}, r_{2}} = -\rho(1-\rho^{2})$ and $\norm{r_{k}}^{2} = 1-\rho^{2}$, giving $\cos\angle(r_{1},r_{2}) = -\rho$, which illustrates the sign flip in \eqref{eq:sign-flip}. We also observe $\sin^{2}\theta_{1} = 1 - \rho^{2}$ and $(G^{-1})_{11} = 1/(1-\rho^{2})$, matching the VIF formulation.
 \end{example}
@@ -362,7 +369,7 @@ which measures how sensitive the log-likelihood is to a small change in $\varthe
 
 \begin{corollary}[Nuisance penalty in the Cram\'er--Rao lower bound]
   \label{cor:crb}
-  Let $\mathbf{F}$ be the Fisher information matrix for a parameter vector $\vartheta \in \mathbb{R}^{n}$. By definition, $\mathbf{F}_{ij} = \E\bigl[\partial_{i} \log p   \partial_j \log p\bigr]$ is the Gram matrix of the score functions $\dot{\ell}_{i} \coloneq \partial_{i} \log p$ in the Hilbert space $L^{2}(p)$ under the inner product $\inner{a, b} \coloneq \E[ab]$. Then the minimum variance of an unbiased estimator is bounded by:
+  Let $\mathbf{F}$ be the Fisher information matrix for a parameter vector $\vartheta \in \mathbb{R}^{n}$. By definition, $\mathbf{F}_{ij} = \E\bigl[\partial_{i} \log p   \partial_{j} \log p\bigr]$ is the Gram matrix of the score functions $\dot{\ell}_{i} \coloneq \partial_{i} \log p$ in the Hilbert space $L^{2}(p)$ under the inner product $\inner{a, b} \coloneq \E[ab]$. Then the minimum variance of an unbiased estimator is bounded by:
   \begin{equation}\label{eq:crb-angle}
     \begin{aligned}
       \operatorname{CRLB}(\vartheta_{i})
@@ -395,12 +402,14 @@ which measures how sensitive the log-likelihood is to a small change in $\varthe
 
 \begin{example}[Linear Gaussian model / collinearity]
   \label{ex:linear-gaussian}
-  Let $y = A\vartheta + \varepsilon$ with $\varepsilon - \mathcal{N}(0, \sigma^{2} I)$ and $A = [a_{1}, \dots, a_{n}]$ having full column rank. Then the log-likelihood is $\log p = -\norm{y - A\vartheta}^{2}/(2\sigma^{2}) + \mathrm{const}$. The score functions take the form $\dot{\ell}_{i} = a_{i}^{\prime} (y - A\vartheta)/\sigma^{2}$, leading to:
+  Let $y = A\vartheta + \varepsilon$ with $\varepsilon \sim \mathcal{N}(0, \sigma^{2} I)$ and $A =
+  \begin{bmatrix}a_{1},& \ldots,& a_{n}
+  \end{bmatrix}$ having full column rank. Then the log-likelihood is $\log p = -\norm{y - A\vartheta}^{2}/(2\sigma^{2}) + \mathrm{const}$. The score functions take the form $\dot{\ell}_{i} = a_{i}^{\prime} (y - A\vartheta)/\sigma^{2}$, leading to:
   \begin{equation*}
     \mathbf{F}_{ij}
-    = \frac{a_{i}^{\prime} \,\E\bigl[(y-A\vartheta)(y-A\vartheta)^{\prime}\bigr]\, a_j}
+    = \frac{a_{i}^{\prime} \E\bigl[(y-A\vartheta)(y-A\vartheta)^{\prime}\bigr] a_{j}}
     {\sigma^{4}}
-    = \frac{a_{i}^{\prime} a_j}{\sigma^{2}}
+    = \frac{a_{i}^{\prime} a_{j}}{\sigma^{2}}
   \end{equation*}
   Thus, the Fisher information matrix is the regressor Gram matrix $A^{\prime} A$ scaled by the noise variance. In this context, the parameter component $\vartheta_{i}$ is associated with the geometric angle in $\mathbb{R}^{m}$ between the column vector $a_{i}$ and the span of the remaining columns. Consequently:
   \begin{equation} \label{eq:vif}
@@ -438,7 +447,7 @@ Consider the Hilbert space $L^{2}(P)$ of zero-mean, finite-variance random varia
 \begin{equation}
   \inner{U, V} \coloneq \E[U V] = \cov(U, V)
 \end{equation}
-Under this geometry, the covariance matrix $\Sigma$ is exactly the Gram matrix $G$ of the variables $X_{1}, \dots, X_{n}$. The squared norm of a variable is its variance, $\norm{X_{i}}^{2} = \var(X_{i}) = \Sigma_{ii}$, and the cosine of the angle between two variables is exactly their Pearson correlation coefficient:
+Under this geometry, the covariance matrix $\Sigma$ is exactly the Gram matrix $G$ of the variables $X_{1}, \ldots, X_{n}$. The squared norm of a variable is its variance, $\norm{X_{i}}^{2} = \var(X_{i}) = \Sigma_{ii}$, and the cosine of the angle between two variables is exactly their Pearson correlation coefficient:
 \begin{equation}
   \cos \angle(X_{i}, X_{j})
   = \frac{\inner{X_{i}, X_{j}}}{\norm{X_{i}} \norm{X_{j}}}
