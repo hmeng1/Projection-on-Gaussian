@@ -4,6 +4,7 @@
 % Core math and theorem tooling
 \RequirePackage{amsthm,amssymb}
 \RequirePackage{mathtools}
+\RequirePackage{enumitem}
 
 % Cross-references
 \RequirePackage{hyperref}
@@ -23,8 +24,7 @@
 
 % Project math operators and notation
 \DeclareMathOperator{\dist}{dist}
-\DeclareMathOperator{\spn}{span}
-\DeclareMathOperator{\Gram}{Gram}
+\DeclareMathOperator{\gram}{Gram}
 
 \DeclarePairedDelimiter{\abs}{\lvert}{\rvert}     % \abs{x} → |x|
 \DeclarePairedDelimiter{\norm}{\lVert}{\rVert}    % \norm{x} → ‖x‖
@@ -49,3 +49,8 @@
 \DeclareMathOperator{\cov}{cov}                % covariance
 \DeclareMathOperator*{\argmin}{argmin}         % minimizing argument
 \DeclareMathOperator*{\argmax}{argmax}         % maximizing argument
+
+\newcommand{\crefrangeconjunction}{--}
+\newcommand{\Crefdefpart}[2]{%
+  \nameCref{#1}~\hyperref[#2]{\labelcref*{#1}\ref*{#2}}%
+}
