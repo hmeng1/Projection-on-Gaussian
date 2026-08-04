@@ -31,20 +31,20 @@ The following two definitions are used throughout.
 \begin{definition}[Gram matrix]
   For vectors $v_{1}, \ldots, v_{r} \in \mathcal{H}$, the Gram matrix is the $r \times r$ matrix
   \begin{equation*}
-    G^{r} = \operatorname{Gram}(v_{1},\ldots,v_{r}) = \bigl[\inner{v_{i}, v_{j}}\bigr]_{i,j=1}^{r}.
+    G^{r} = \Gram(v_{1},\ldots,v_{r}) = \bigl[\inner{v_{i}, v_{j}}\bigr]_{i,j=1}^{r}.
   \end{equation*}
-  In particular, $G = \operatorname{Gram}(v_{1},\ldots,v_{n})$.
+  In particular, $G = \Gram(v_{1},\ldots,v_{n})$.
 \end{definition}
 
 \begin{definition}[Bordered matrix]
-  If $A = \operatorname{Gram}(v_{1},\ldots,v_{m})$, $b_{i} = \inner{v_{i}, v_{m+1}}$, and $\gamma = \norm{v_{m+1}}^{2}$, the bordered Gram matrix obtained by appending $v_{m+1}$ is
+  If $A = \Gram(v_{1},\ldots,v_{m})$, $b_{i} = \inner{v_{i}, v_{m+1}}$, and $\gamma = \norm{v_{m+1}}^{2}$, the bordered Gram matrix obtained by appending $v_{m+1}$ is
   \begin{equation*}
     \operatorname{Bord}(A; b, \gamma) =
     \begin{pmatrix}
       A & b \\
       b^{\prime} & \gamma
     \end{pmatrix}
-    = \operatorname{Gram}(v_{1},\ldots,v_{m},v_{m+1}).
+    = \Gram(v_{1},\ldots,v_{m},v_{m+1}).
   \end{equation*}
   For this matrix, $A$ is the leading principal block while $b$ and $\gamma$ capture cross-terms and self-energy of $v$.
 \end{definition}
@@ -166,7 +166,7 @@ The next lemma is the core computational step for this section. It links orthogo
 \begin{proof}
   Let $P$ be the permutation matrix of the transposition $(i, n)$. Then $PGP^{\prime}$ is the Gram matrix of the family with $v_{i}$ and $v_{n}$ interchanged. Because $\det P = \pm 1$, we have $\det(PGP^{\prime}) = (\det P)^{2} \det G = \det G$. Deleting the last row and column of $PGP^{\prime}$ leaves the Gram matrix of $\{v_{k}\}_{k \neq i}$, whose determinant is $M_{ii}$; this is unaffected by the internal ordering of the remaining vectors. Hence, we may assume without loss of generality that $i = n$.
 
-  Apply \Cref{lem:projection} with $A = G^{n-1} = \operatorname{Gram}(v_{1},\ldots,v_{n-1})$, $b_{i} = \inner{v_{i}, v_{n}}$ for $i = 1, \ldots, n-1$, $\gamma = \norm{v_{n}}^{2} = G_{nn}$, $S = S_{-n}$, $\bar{G} = G$, and $M_{nn} = \det G^{n-1}$.
+  Apply \Cref{lem:projection} with $A = G^{n-1} = \Gram(v_{1},\ldots,v_{n-1})$, $b_{i} = \inner{v_{i}, v_{n}}$ for $i = 1, \ldots, n-1$, $\gamma = \norm{v_{n}}^{2} = G_{nn}$, $S = S_{-n}$, $\bar{G} = G$, and $M_{nn} = \det G^{n-1}$.
 
   Part (iii) gives $\det G = M_{nn}  s$, and Part (ii) identifies $s = \dist^{2}(v_{n}, S_{-n})$, which by \eqref{eq:angle-def} equals $G_{nn}\sin^{2}\theta_{n}$. This establishes the first equation.
 
