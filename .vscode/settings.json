@@ -58,8 +58,9 @@
       ]
     },
     {
-      "name": "pdflatex",
+      "name": "pdflatex*2",
       "tools": [
+        "pdflatex",
         "pdflatex",
       ]
     }
