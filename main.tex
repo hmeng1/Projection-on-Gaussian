@@ -282,23 +282,27 @@ There is a fundamental asymmetry between \eqref{eq:hadamard} and \eqref{eq:minor
   \end{align*}
   where $k$ ranges over the $n-2$ remaining indices. Block inversion (the $2\times 2$ block version of the $\mathrm{LDL}^{\prime}$ factorization) dictates that the trailing block of $G^{-1}$ is the inverse of the Schur complement:
   \begin{equation}
-    [(G)^{-1}]_{\{n-1,n\}} = H^{-1},
+    [(G)^{-1}]_{n-1:n,n-1:n} = H^{-1},
     \qquad H \coloneq D - B^{\prime} A^{-1} B
     \label{eq:block-inverse}
   \end{equation}
-  Here, $H$ is precisely the Gram matrix of $(\tilde{r}_{n-1}, \tilde{r}_{n})$. By \Cref{lem:projection}(i), $P_{S_{-i,-j}} v_{n-1} = \sum_{k} c^{(n-1)}_{k} v_{k}$ with $c^{(n-1)} = A^{-1} B_{\cdot,n-1}$. Because the error $\tilde{r}_{n-1}$ is orthogonal to the control subspace $S_{-i,-j}$ while the projection $v_{n} - \tilde{r}_{n} \in S_{-i,-j}$, we get:
+  Here, $H$, denoted by
+  $
+  \begin{bmatrix}
+    H_{1,1} & H_{1,2} \\ H_{2,1} & H_{2,2}
+  \end{bmatrix}$ is precisely the Gram matrix of $(\tilde{r}_{n-1}, \tilde{r}_{n})$. By \Cref{lem:projection}(i), $P_{S_{-i,-j}} v_{n-1} = \sum_{k=1}^{n-2} c^{(n-1)}_{k} v_{k}$ with $c^{(n-1)} = A^{-1} B_{:,n-1}$. Because the error $\tilde{r}_{n-1}$ is orthogonal to the control subspace $S_{-i,-j}$ while the projection $v_{n} - \tilde{r}_{n} \in S_{-i,-j}$, we get:
   \begin{equation*}
     \begin{aligned}
       \inner{\tilde{r}_{n-1}, \tilde{r}_{n}}
       &= \inner{\tilde{r}_{n-1}, v_{n}} \\
-      &= D_{n-1,n} - (c^{(n-1)})^{\prime} B_{\cdot,n} \\
-      &= D_{n-1,n} - B_{\cdot,n-1}^{\prime} A^{-1} B_{\cdot,n} \\
-      &= H_{n-1,n}
+      &= D_{n-1,n} - (c^{(n-1)})^{\prime} B_{:,n} \\
+      &= D_{n-1,n} - B_{:,n-1}^{\prime} A^{-1} B_{:,n} \\
+      &= H_{1,2}
     \end{aligned}
   \end{equation*}
-  For a $2\times2$ symmetric matrix $H$, the adjugate matrix is $\bigl(
-    \begin{smallmatrix} H_{22} & -H_{12}\\ -H_{12} & H_{11}
-  \end{smallmatrix}\bigr)$. Thus, $\det H$ naturally cancels out in the normalized ratio:
+  Since $H$ is of size $2 \times 2$, the adjugate matrix of $H$ is $
+  \begin{bmatrix} H_{2,2} & -H_{1,2}\\ -H_{1,2} & H_{1,1}
+  \end{bmatrix}$. Thus, $\det H$ naturally cancels out in the normalized ratio:
   \begin{equation*}
     \frac{-(H^{-1})_{12}}{\sqrt{(H^{-1})_{11}(H^{-1})_{22}}}
     = \frac{H_{12}/\det H}{\sqrt{H_{11}H_{22}}/\det H}
