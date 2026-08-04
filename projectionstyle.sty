@@ -24,10 +24,27 @@
 % Project math operators and notation
 \DeclareMathOperator{\dist}{dist}
 \DeclareMathOperator{\spn}{span}
-\DeclareMathOperator{\adj}{adj}
 
 \DeclarePairedDelimiter{\abs}{\lvert}{\rvert}     % \abs{x} → |x|
 \DeclarePairedDelimiter{\norm}{\lVert}{\rVert}    % \norm{x} → ‖x‖
 \DeclarePairedDelimiter{\floor}{\lfloor}{\rfloor} % \floor{x} → ⌊x⌋
 \DeclarePairedDelimiter{\ceil}{\lceil}{\rceil}    % \ceil{x} → ⌈x⌉
 \DeclarePairedDelimiter{\inner}{\langle}{\rangle}  % \inner{x}{y} → ⟨x, y⟩
+
+%  \DeclareMathOperator* puts limits above/below in display math (like \sum).
+\DeclareMathOperator{\tr}{tr}                % trace
+\DeclareMathOperator{\nullity}{null}         % nullity
+\DeclareMathOperator{\adj}{adj}              % adjugate
+\DeclareMathOperator{\range}{range}          % range
+\DeclareMathOperator{\rank}{rank}            % rank
+\DeclareMathOperator{\E}{E}                  % expectation
+
+\DeclareMathOperator{\MSE}{MSE}                % Mean Squared Error
+\DeclareMathOperator{\mse}{mse}                % mean squared error
+\DeclareMathOperator{\ML}{ML}                  % Maximum Likelihood
+\DeclareMathOperator{\MAP}{MAP}                % Maximum A Posteriori
+\DeclareMathOperator{\diag}{diag}              % diagonal matrix
+\DeclareMathOperator{\var}{var}                % variance
+\DeclareMathOperator{\cov}{cov}                % covariance
+\DeclareMathOperator*{\argmin}{argmin}         % minimizing argument
+\DeclareMathOperator*{\argmax}{argmax}         % maximizing argument

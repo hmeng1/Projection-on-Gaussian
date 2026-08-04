@@ -1,0 +1,121 @@
+{
+  "latex-workshop.latex.tools": [
+    {
+      "name": "pdflatex",
+      "command": "C:\\texlive\\2026\\bin\\windows\\pdflatex.exe",
+      "args": [
+        "-shell-escape",
+        "-interaction=nonstopmode",
+        "-synctex=1",
+        "%DOC%"
+      ],
+      "env": {
+        "Path": "C:\\texlive\\2026\\bin\\windows"
+      }
+    },
+    {
+      "name": "biber",
+      "command": "C:\\texlive\\2026\\bin\\windows\\biber.exe",
+      "args": [
+        "%DOCFILE%"
+      ],
+      "env": {
+        "Path": "C:\\texlive\\2026\\bin\\windows"
+      }
+    },
+    {
+      "name": "makeglossaries",
+      "command": "C:\\texlive\\2026\\bin\\windows\\makeglossaries.exe",
+      "args": [
+        "%DOCFILE%"
+      ],
+      "env": {
+        "Path": "C:\\texlive\\2026\\bin\\windows"
+      }
+    },
+    {
+      "name": "epstopdf-all",
+      "command": "powershell.exe",
+      "args": [
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-Command",
+        "Get-ChildItem -Path .\\figures -Filter *.eps -File | Where-Object { $out = Join-Path $_.DirectoryName ($_.BaseName + '-eps-converted-to.pdf'); -not (Test-Path $out) -or $_.LastWriteTime -gt (Get-Item $out).LastWriteTime } | ForEach-Object { & 'C:\\texlive\\2026\\bin\\windows\\epstopdf.exe' \"--outfile=$($_.DirectoryName)\\$($_.BaseName)-eps-converted-to.pdf\" $_.FullName }"
+      ]
+    }
+  ],
+  "latex-workshop.latex.recipes": [
+    {
+      "name": "epstopdf-all->pdflatex -> biber -> makeglossaries -> pdflatex*2",
+      "tools": [
+        "epstopdf-all",
+        "pdflatex",
+        "biber",
+        "makeglossaries",
+        "pdflatex",
+        "pdflatex"
+      ]
+    },
+    {
+      "name": "pdflatex*2",
+      "tools": [
+        "pdflatex",
+        "pdflatex"
+      ]
+    }
+  ],
+  "latex-workshop.latex.recipe.default": "lastUsed",
+  "latex-workshop.latex.clean.method": "glob",
+  "latex-workshop.latex.clean.fileTypes": [
+    "%DOCFILE%.aux",
+    "%DOCFILE%.bbl",
+    "%DOCFILE%.blg",
+    "%DOCFILE%.idx",
+    "%DOCFILE%.ind",
+    "%DOCFILE%.lof",
+    "%DOCFILE%.lot",
+    "%DOCFILE%.out",
+    "%DOCFILE%.toc",
+    "%DOCFILE%.acn",
+    "%DOCFILE%.acr",
+    "%DOCFILE%.alg",
+    "%DOCFILE%.glg",
+    "%DOCFILE%.glo",
+    "%DOCFILE%.gls",
+    "%DOCFILE%.fls",
+    "%DOCFILE%.log",
+    "%DOCFILE%.fdb_latexmk",
+    "%DOCFILE%.snm",
+    "%DOCFILE%.synctex(busy)",
+    "%DOCFILE%.synctex.gz(busy)",
+    "%DOCFILE%.nav",
+    "%DOCFILE%.vrb",
+    "%DOCFILE%.nls",
+    "%DOCFILE%.nlo",
+    "%DOCFILE%.ilg",
+    "%DOCFILE%.bcf",
+    "**/*.aux"
+  ],
+  "latex-workshop.latex.clean.subfolder.enabled": true,
+  "latex-workshop.formatting.latex": "tex-fmt",
+  "latex-workshop.formatting.tex-fmt.path": "tex-fmt",
+  "latex-workshop.latex.autoBuild.run": "never",
+  "latex-workshop.synctex.indicator": "circle",
+  "latex-workshop.synctex.afterBuild.enabled": true,
+  "latex-workshop.view.pdf.viewer": "tab",
+  "latex-workshop.view.pdf.invertMode.enabled": "never",
+  "latex-workshop.latex.autoBuild.cleanAndRetry.enabled": false,
+  "latex-workshop.view.outline.sync.viewer": true,
+  "latex-workshop.latex.autoClean.run": "onFailed",
+  "latex-workshop.check.duplicatedLabels.enabled": false,
+  "latex-workshop.format.fixQuotes.enabled": true,
+  "latex-workshop.formatting.latexindent.path": "C:\\texlive\\2026\\bin\\windows\\latexindent.exe",
+  "files.associations": {
+    "*.sty": "latex"
+  },
+  "[latex]": {
+    "editor.defaultFormatter": "James-Yu.latex-workshop",
+    "editor.formatOnSave": true
+  }
+}
