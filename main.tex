@@ -345,10 +345,14 @@ For a parametric model with density $f(x;\vartheta)$, the likelihood function is
 \begin{equation*}
   \dot{\ell}_{i}(x;\vartheta) \coloneq \partial_{i} \log f(x;\vartheta)
 \end{equation*}
-The collection of score functions forms a family of random variables in $L^{2}(P_{\vartheta})$. For the purposes of this note, the only structure we need is that their Gram matrix under $\inner{a,b} = \E[ab]$ is the Fisher information matrix. In the language of information geometry \cite{amari2000}, this is the Fisher--Rao metric evaluated on the coordinate score family at $\vartheta$. Throughout this section we assume the usual regularity conditions---$f(\cdot;\vartheta) > 0$, differentiation under the integral sign permitted, scores square integrable---and, as the counterpart of the linear-independence assumption of \Cref{sec:minor-angle}, that $\mathbf{F}(\vartheta) \succ 0$, so that every principal block of $\mathbf{F}$ is invertible.
+The collection of score functions forms a family of random variables in $L^{2}(P_{\vartheta})$; their Gram matrix under $\inner{f,g} = \E[fg]$ is the Fisher information matrix, defined formally below. In the language of information geometry \cite{amari2000}, this is the Fisher--Rao metric evaluated on the coordinate score family at $\vartheta$. Throughout this section we assume the usual regularity conditions---$f(\cdot;\vartheta) > 0$, differentiation under the integral sign permitted, scores square integrable---and, as the counterpart of the linear-independence assumption of \Cref{sec:minor-angle}, that $\mathbf{F}(\vartheta) \succ 0$, so that every principal block of $\mathbf{F}$ is invertible.
 
-\begin{definition}[Cram\'er--Rao lower bound]
-  Let $\vartheta \in \mathbb{R}^{n}$ parameterize a statistical model with Fisher information matrix $\mathbf{F}(\vartheta)$. For any unbiased estimator $\hat{\vartheta}$ of $\vartheta$, the covariance matrix satisfies
+\begin{definition}[Fisher information matrix and Cram\'er--Rao lower bound]
+  Let $\vartheta \in \mathbb{R}^{n}$ parameterize a statistical model with score functions $\dot{\ell}_{i}(x;\vartheta) \coloneq \partial_{i}\log f(x;\vartheta)$. The \emph{Fisher information matrix} is
+  \begin{equation*}
+    \mathbf{F}_{i,j}(\vartheta) \coloneq \E_{\vartheta}\bigl[\dot{\ell}_{i}\,\dot{\ell}_{j}\bigr],
+  \end{equation*}
+  which is the Gram matrix of $(\dot{\ell}_{1},\ldots,\dot{\ell}_{n})$ under $\inner{f,g} = \E[fg]$. For any unbiased estimator $\hat{\vartheta}$ of $\vartheta$, the covariance matrix satisfies
   \begin{equation*}
     \cov(\hat{\vartheta}) \succeq \mathbf{F}(\vartheta)^{-1}
   \end{equation*}
