@@ -4,22 +4,135 @@
 
 \title{Projections, Gram Matrices, and Statistical Information}
 \author{Haozhan Meng}
-\date{\today}
 
 \begin{document}
 
 \maketitle
 
 \begin{abstract}
-  This paper explores geometric connections among Gram matrices, orthogonal projections, and foundational statistical bounds, linking linear algebra with parameter estimation.
+  A number of standard quantities in multivariate statistics --- the variance inflation
+  factor, the partial correlation, the nuisance penalty in the Cram\'er--Rao lower bound,
+  the canonical correlations, and the entries of a Gaussian precision matrix --- are
+  ratios of Gram determinants, and are therefore measurements of angle. This note
+  develops that observation systematically. A single projection lemma, identifying the
+  orthogonal projection, the Schur complement, and the bordered Gram determinant as three
+  readings of one construction, generates the rest: the ratio of a Gram determinant to a
+  diagonal minor is the squared distance from one vector to the span of the others, and
+  the associated angle controls the corresponding diagonal entry of the inverse.
+  Specializing the inner product to the covariance form on $L^{2}(P_{\vartheta})$ makes the
+  score functions vectors and the Fisher information their Gram matrix, so the
+  Cram\'er--Rao lower bound factors into a single-parameter bound times
+  $\csc^{2}\theta_{i}$, with the residual score---the efficient score---carrying the
+  entire penalty. Replacing an individual coordinate by a block of interest parameters
+  replaces the scalar angle by the principal angles between score subspaces, the penalty by
+  a product of squared sines, and Hadamard's inequality by Fischer's. For Gaussian vectors
+  the same angles are Hotelling's canonical correlations, and the same factorization is
+  Wilks' $\Lambda$, the chain rule for entropy, and the conditional independence structure
+  of a graphical model. The individual results are classical; what is offered here is one
+  derivation chain for all of them, a consistent account of which quantities are
+  coordinate-free and which are artifacts of parametrization, and the numerically stable
+  form of each diagnostic.
 \end{abstract}
 
 \section{Introduction}\label{sec:intro}
-This note develops a unifying geometric perspective on several classical ideas in statistics and linear algebra. Starting from Gram matrices and orthogonal projections, we show how determinants, minors, and Schur complements encode the geometry of residuals and angles between vectors. These geometric quantities, in turn, determine the conditioning of linear systems, the strength of collinearity, and the precision with which individual parameters can be estimated.
 
-The central thesis is simple. Principal minors of a Gram matrix measure the squared distance of one vector from the subspace spanned by the others; these residual distances are the quantities that determine angles, partial correlations, and the conditioning of the underlying system. In the statistical setting, the same geometry explains why nuisance parameters inflate the Cram\'er--Rao lower bound and why Gaussian graphical models encode conditional independence through zeros in the precision matrix.
+Several diagnostics in regression, estimation theory, and multivariate analysis have the
+same algebraic shape: a determinant divided by one of its minors, or a matrix entry
+divided by the corresponding entry of the inverse. The variance inflation factor, the
+partial correlation coefficient, the loss of efficiency caused by nuisance parameters, and
+the conditional variance of one Gaussian coordinate given the rest are all of this form.
+They are usually introduced separately, in the vocabulary of the field that needs them, and
+their common origin is left implicit. That origin is elementary: each ratio measures a
+squared distance from a vector to a subspace, and hence an angle.
 
-The first part of the paper builds the core projection identity and derives the relation between principal minors, inverse Gram entries, and the angle between a vector and the subspace spanned by the others. We then connect these identities to the Cram\'er--Rao lower bound, partial correlation, and Gaussian graphical models, showing that the same geometry governs both algebraic stability and statistical efficiency.
+The central thesis of this note is that this single geometric fact organizes the material.
+Principal minors of a Gram matrix measure the squared distance of one vector from the span
+of the others; these residual distances determine angles, partial correlations, and the
+conditioning of the underlying system. In the statistical setting, the same geometry
+explains why nuisance parameters inflate the Cram\'er--Rao lower bound, why collinear
+regressors produce unstable coefficient estimates, and why Gaussian graphical models encode
+conditional independence through zeros in the precision matrix. Because the argument is
+carried out in an abstract inner-product space, it applies verbatim to Euclidean vectors,
+to random variables under the covariance inner product, and to score functions in
+$L^{2}(P_{\vartheta})$; only the interpretation of the inner product changes.
+
+Everything rests on one lemma. Given a family of vectors and one additional vector $u$,
+the coefficients of the orthogonal projection of $u$ onto their span solve a normal
+equation with the Gram matrix; the squared distance from $u$ to that span is the Schur
+complement of the Gram matrix in the bordered Gram matrix; and the bordered determinant is
+the original determinant scaled by that distance. Projection, Schur complement, and
+determinant factorization are three readings of the same $\mathrm{LDL}^{\prime}$
+identity, and each of the results that follows is obtained by choosing what to border with.
+Bordering one coordinate at a time gives the sequential factorization and Hadamard's
+inequality; bordering the last coordinate against all others gives the diagonal minor
+ratio; bordering two coordinates against the remaining $n-2$ gives the partial correlation;
+bordering an entire block gives the principal-angle factorization.
+
+Two distinctions are emphasized throughout because they are easy to lose. The first is
+between sequential and simultaneous angles. The determinant factors into a product of
+angles measured against \emph{predecessors}, which depends on the ordering of the vectors
+and is therefore not a diagnostic for any particular coordinate; the angle relevant to
+coordinate $i$ is measured against \emph{all} other vectors and is permutation invariant.
+A small determinant reports that the system is ill-conditioned but does not say which
+coordinate is responsible, which is a specific limitation of the D-optimality criterion.
+The second distinction is between coordinates and blocks. The angle of a coordinate
+against everything else and the principal angles between two blocks answer different
+questions, and neither bounds the other in the direction one might expect. The concrete
+payoff is a failure mode that no aggregate criterion detects: a model can satisfy Fischer's
+inequality almost with equality --- the interest and nuisance blocks nearly orthogonal, so
+that the block diagnostic reports a well-separated problem --- while a single coordinate
+inside the interest block is nearly indeterminate because of collinearity with its own
+neighbours. Block separation is not a certificate of identifiability, and the two angle
+families must be reported together.
+
+In the statistical half of the note, the score functions of a parametric model are treated
+as vectors in $L^{2}(P_{\vartheta})$ under the inner product $\inner{a,b} = \E[ab]$, so that
+the Fisher information matrix is literally a Gram matrix. The Cram\'er--Rao bound for a
+single parameter then splits into the reciprocal of that parameter's own information times
+a purely geometric penalty $\csc^{2}\theta_{i}$, and the residual of the score after
+projecting out the nuisance directions --- the efficient score of semiparametric theory
+\cite{bickel1993,cox1987} --- is exactly the part of the sensitivity that the nuisance
+parameters cannot imitate. The penalty is a property of the nuisance \emph{subspace} rather
+than of any parametrization of it, which is the invariance statement that makes the
+quantity meaningful. For a block of interest parameters the same argument produces the
+principal angles \cite{bjorck1973} between the interest and nuisance score subspaces: the
+efficient information factors as a whitening conjugated by
+$I - \mathbf{C}\mathbf{C}^{\prime}$, the determinant penalty becomes
+$\prod_{k}\sin^{2}\phi_{k}$, the worst-case inflation over all scalar functionals of the
+interest block is governed by the smallest principal angle alone, and the principal vectors
+name the parameter combination that is failing. The principal angles form a complete
+invariant of a pair of subspaces of given dimensions, so this reduction discards nothing
+about the coupling between the blocks.
+
+Specializing to Gaussian vectors recovers the classical multivariate dictionary. The
+covariance matrix is the Gram matrix of the coordinates, orthogonal projection coincides
+with conditional expectation, the diagonal of the precision matrix inverts a conditional
+variance, and the normalized off-diagonal entries are partial correlations whose vanishing
+is conditional independence \cite{lauritzen1996}. At block level the principal angles are
+Hotelling's canonical correlations \cite{hotelling1936}, the determinant factorization is
+Wilks' $\Lambda$ \cite{wilks1932,anderson2003}, Fischer's inequality is the nonnegativity
+of the mutual information between the blocks, and Hadamard's inequality is the statement
+that joint entropy is maximized under independence \cite{cover2006}. Each of these is the
+same identity read under a different inner product.
+
+No claim of novelty is made for the individual results; the projection lemma, the minor
+ratio, the efficient score, the principal angles of Bj\"orck and Golub, and the canonical
+correlations of Hotelling are all standard. What this note contributes is a single
+derivation chain connecting them, an explicit account of which factors in each
+identity are coordinate-free and which are artifacts of the chosen parametrization, and, in
+each case, the computational form that a diagnostic should actually take --- Cholesky
+factorizations and triangular solves rather than determinants and minors, and a
+subtraction-free route to the small angles, which are simultaneously the diagnostically
+interesting regime and the numerically delicate one.
+
+The rest of the note is organized as follows. \Cref{sec:minor-angle} develops the geometry:
+after fixing the Gram-matrix and angle notation, it establishes the projection lemma, the
+diagonal minor ratio and its regression reading, the off-diagonal ratio and partial
+correlation, and the scalar and block forms of the Cram\'er--Rao bound, closing with the
+determinant identities of Hadamard and Fischer. \Cref{sec:gaussian-vectors} specializes the
+same framework to Gaussian random vectors, where the results become statements about
+conditional variance, conditional independence, canonical correlation, and entropy.
+\Cref{sec:conclusion} collects the invariance audit and the computational summary.
 
 \section{Minors, angles, and the Cram\'er--Rao lower bound}\label{sec:minor-angle}
 
@@ -27,7 +140,7 @@ The first part of the paper builds the core projection identity and derives the 
 
 Let $v_{1}, \ldots, v_{n}$ be vectors in a real inner product space $\mathcal{H}$, and let $G = [G_{i,j}] \in \mathbb{R}^{n \times n}$ be their Gram matrix, defined by $G_{i,j} = \inner{v_{i}, v_{j}}$. The space $\mathcal{H}$ may be finite-dimensional (such as Euclidean space) or infinite-dimensional (such as the $L^{2}$ space of random variables used later for Fisher information).
 
-The following two definitions are used throughout.
+The Gram matrix notation is used throughout.
 \begin{definition}[Gram matrix]
   For vectors $v_{1}, \ldots, v_{r} \in \mathcal{H}$, the Gram matrix is the $r \times r$ matrix
   \begin{equation*}
@@ -36,25 +149,12 @@ The following two definitions are used throughout.
   In particular, $G = \gram(v_{1},\ldots,v_{n})$.
 \end{definition}
 
-\begin{definition}[Bordered matrix]
-  If $A = \gram(v_{1},\ldots,v_{m})$, $b_{i} = \inner{v_{i}, v_{m+1}}$, and $\gamma = \norm{v_{m+1}}^{2}$, the bordered Gram matrix obtained by appending $v_{m+1}$ is
-  \begin{equation*}
-    \operatorname{Bord}(A; b, \gamma) =
-    \begin{bmatrix}
-      A & b \\
-      b^{\prime} & \gamma
-    \end{bmatrix}
-    = \gram(v_{1},\ldots,v_{m},v_{m+1}).
-  \end{equation*}
-  For this matrix, $A$ is the leading principal block while $b$ and $\gamma$ capture cross-terms and self-energy of $v$.
-\end{definition}
-
 For any $x \in \mathbb{R}^{n}$,
-\begin{equation}  \label{eq:gram-psd}
+\begin{equation*}
   x^{\prime} G x
   = \sum_{i,j} x_{i} x_{j} \inner{v_{i}, v_{j}}
   = \norm[\Big]{\sum_{i} x_{i} v_{i}}^{2}  \ge  0
-\end{equation}
+\end{equation*}
 Hence $G \succeq 0$ always, and $G \succ 0$ exactly when the $v_{k}$ are linearly independent. We assume linear independence throughout, so $G$ is invertible. Every principal submatrix of $G$ is itself a Gram matrix of a subfamily and is therefore positive definite. Consequently, all principal minors are strictly positive, so the ratios below are well defined and nonzero.
 
 Write $M_{i,j}$ for the first minor obtained by deleting row $i$ and column $j$, and $C_{i,j} = (-1)^{i+j} M_{i,j}$ for the corresponding cofactor. The inverse entries satisfy $(G^{-1})_{i,j} = C_{j,i}/\det G = C_{i,j}/\det G$, where the last equality follows because $G$, and therefore its cofactor matrix, is symmetric.
@@ -69,6 +169,36 @@ where $P_{S}$ is the orthogonal projection onto $S$. Since $v = P_{S} v + (v - P
   \quad \dist(v,S) \coloneq \norm{v - P_{S} v} .
   \label{eq:angle-def}
 \end{equation}
+
+The same construction applied to a pair of subspaces produces not one angle but a full spectrum of them \cite{bjorck1973}.
+
+\begin{definition}[Principal angles]\label{def:principal-angles}
+  Let $S_{a}, S_{b} \subseteq \mathcal{H}$ be subspaces of dimensions $p$ and $q$, and set
+  $\nu \coloneq \min(p,q)$. The principal angles
+  $0 \le \phi_{1} \le \cdots \le \phi_{\nu} \le \pi/2$ and principal vectors
+  $(y_{k}, z_{k})$ are defined recursively by
+  \begin{equation}
+    \cos\phi_{k}
+    = \max_{\norm{y}=\norm{z}=1} \bigl\{\inner{y, z} \colon y \in S_{a},\, z \in S_{b}  \bigr\}
+    = \inner{y_{k}, z_{k}}
+    \label{eq:principal-angle-def}
+  \end{equation}
+  subject to $\inner{y, y_{\ell}} = \inner{z, z_{\ell}} = 0$ for $\ell < k$. When $p > q$ we
+  adopt the convention $\phi_{k} \coloneq \pi/2$ for $q < k \le p$, so that a full list of
+  $p$ angles is always available.
+\end{definition}
+
+\begin{remark}[The two angle definitions agree]\label{rem:angle-consistency}
+  For $p = 1$ and $S_{a} = \operatorname{span}\{v\}$ there is a single principal angle. If
+  $P_{S_{b}}v \neq 0$, then \eqref{eq:principal-angle-def} maximizes
+  $\inner{v, z}/\norm{v}$ over unit $z \in S_{b}$, which is attained at
+  $z = P_{S_{b}}v/\norm{P_{S_{b}}v}$ with value $\norm{P_{S_{b}}v}/\norm{v}$; if
+  $P_{S_{b}}v = 0$ the maximum is $0$. In both cases
+  $\phi_{1} = \theta(v, S_{b})$: the scalar angle \eqref{eq:angle-def} is the
+  one-dimensional case of \Cref{def:principal-angles}, and the two are used interchangeably
+  below. Angles are unsigned throughout --- both definitions take a maximum over
+  orientations --- so they record the magnitude of an alignment and never its direction.
+\end{remark}
 
 \subsection{The projection lemma}
 
@@ -96,15 +226,14 @@ The next lemma is the core computational step for this section. It links orthogo
 
 \begin{proof}
   (i) The projection is uniquely characterized by finding a vector $\hat{u} \in S$ such that the error $u - \hat{u}$ is orthogonal to $S$. Orthogonality to $S$ is equivalent to orthogonality to each basis vector $v_{i}$. Writing $\hat{u} = \sum_{i} c_{i} v_{i}$, the normal equations become:
-  \begin{equation}
+  \begin{equation*}
     \begin{aligned}
       0 &= \inner{u - \hat{u}, v_{j}} \\
       &= b_{j} - \sum_{i} c_{i}\inner{v_{i}, v_{j}}  \\
       &= b_{j} - (A c)_{j},
       \quad j = 1, \ldots, m,
     \end{aligned}
-    \label{eq:normal-eq}
-  \end{equation}
+  \end{equation*}
   which simplifies to the matrix equation $Ac = b$. Since $A \succ 0$ is invertible, $c = A^{-1} b$ exists and is uniquely determined.
 
   (ii) Using the relation $Ac = b$ twice, we find the squared norm of the projection:
@@ -121,7 +250,7 @@ The next lemma is the core computational step for this section. It links orthogo
   (Expanding algebraically as $\gamma - 2c^{\prime} b + c^{\prime} A c = \gamma - 2 b^{\prime} A^{-1} b + b^{\prime} A^{-1} b$ gives the same value.) Note that $s > 0$ if and only if $u \notin S$, which matches the linear-independence requirement for the full extended family.
 
   (iii) We can verify the block $\mathrm{LDL}^{\prime}$ factorization (the matrix equivalent of completing the square) by multiplying it out:
-  \begin{equation} \label{eq:ldl}
+  \begin{equation*}
     \bar{G} =
     \begin{bmatrix}
       I & 0 \\
@@ -135,7 +264,7 @@ The next lemma is the core computational step for this section. It links orthogo
       I & A^{-1} b \\
       0 & 1
     \end{bmatrix}
-  \end{equation}
+  \end{equation*}
   where $b^{\prime} A^{-1} b + s = \gamma$. Since the outer factors are unit triangular, their determinants are exactly $1$. By the multiplicativity of determinants, we obtain $\det \bar{G} = s \det A$.
 \end{proof}
 
@@ -168,7 +297,7 @@ The next lemma is the core computational step for this section. It links orthogo
 
   \ref{itm:projection-determinant} gives $\det G = M_{n,n}  s$, and \ref{itm:projection-squared-norm} identifies $s = \dist^{2}(v_{n}, S_{-n})$, which by \eqref{eq:angle-def} equals $G_{n,n}\sin^{2}\theta_{n}$. This establishes the first equation.
 
-  For the second equation, recall from $G^{-1} = \frac{1}{\det G}\adj(G)$ that $(G^{-1})_{n,n} = C_{n,n} / \det G$. Since $C_{n,n} = (-1)^{2n} M_{n,n} = M_{n,n}$, we directly get $(G^{-1})_{n,n} = M_{n,n}/\det G = 1/s$.
+  For the second equation, recall from $\det G \cdot G^{-1} = \adj(G)$ that $(G^{-1})_{n,n} = C_{n,n} / \det G$. Since $C_{n,n} = (-1)^{2n} M_{n,n} = M_{n,n}$, we directly get $(G^{-1})_{n,n} = M_{n,n}/\det G = 1/s$.
 \end{proof}
 
 The next two remarks provide consistency checks and clarify the statistical meaning of the result.
@@ -176,21 +305,21 @@ The next two remarks provide consistency checks and clarify the statistical mean
 \begin{remark}[Cauchy--Schwarz and the range of the ratio]
   \label{rem:cs-check}
   Applying the Cauchy--Schwarz inequality in $\mathbb{R}^{n}$ to the dual pair $G^{1/2} e_{i}$ and $G^{-1/2} e_{i}$,
-  \begin{equation}\label{eq:kantorovich-lite}
+  \begin{equation}\label{eq:cs-dual}
     \begin{aligned}
       1 = e_{i}^{\prime} e_{i} &= \inner{G^{1/2} e_{i}, G^{-1/2} e_{i}} \\
       &\le  \norm{G^{1/2} e_{i}} \norm{G^{-1/2} e_{i}} = \sqrt{G_{i,i}(G^{-1})_{i,i}} ,
     \end{aligned}
   \end{equation}
-  so $G_{i,i}(G^{-1})_{i,i} \ge 1$, confirming that our rearranged equation indeed returns a valid geometric sine $\sin^{2}\theta_{i} \le 1$. Equality forces $G^{1/2}e_{i} \parallel G^{-1/2}e_{i}$, meaning $G e_{i} = \lambda e_{i}$. In other words, the $i$-th column of $G$ vanishes off the diagonal, implying $v_{i} \perp S_{-i}$ and $\theta_{i} = \pi/2$ (perfect orthogonality).
+  so $G_{i,i}(G^{-1})_{i,i} \ge 1$, confirming that the rearranged form in \eqref{eq:inverse-entry} returns $\sin^{2}\theta_{i} \in (0,1]$. Equality forces $G^{1/2}e_{i} \parallel G^{-1/2}e_{i}$, meaning $G e_{i} = \lambda e_{i}$. In other words, the $i$-th column of $G$ vanishes off the diagonal, implying $v_{i} \perp S_{-i}$ and $\theta_{i} = \pi/2$ (perfect orthogonality).
 \end{remark}
 
 \begin{remark}[Multiple correlation and VIF]
   \label{rem:R2}
-  Let $g_{k} \coloneq \inner{v_{k}, v_{i}}$ for $k \neq i$, and let $G^{-i}$ be the Gram matrix of $\{v_{k}\}_{k\neq i}$. \Crefdefpart{lem:projection}{itm:projection-squared-norm} gives $\norm{P_{S_{-i}} v_{i}}^{2} = g^{\prime} (G^{-i})^{-1} g$. The squared multiple correlation---which measures how much variance of $v_{i}$ is explained by the remaining vectors---is:
+  Let $g_{k} \coloneq \inner{v_{k}, v_{i}}$ for $k \neq i$, and let $G_{-i}$ be the Gram matrix of $\{v_{k}\}_{k\neq i}$. \Crefdefpart{lem:projection}{itm:projection-squared-norm} gives $\norm{P_{S_{-i}} v_{i}}^{2} = g^{\prime} G_{-i}^{-1} g$. The squared multiple correlation---which measures how much variance of $v_{i}$ is explained by the remaining vectors---is:
   \begin{equation}
     R_{i}^{2} \coloneq \frac{\norm{P_{S_{-i}} v_{i}}^{2}}{\norm{v_{i}}^{2}}
-    = \frac{g^{\prime} (G^{-i})^{-1} g}{G_{i,i}}
+    = \frac{g^{\prime} G_{-i}^{-1} g}{G_{i,i}}
     = \cos^{2}\theta_{i} ,
     \label{eq:R2}
   \end{equation}
@@ -203,19 +332,18 @@ The next two remarks provide consistency checks and clarify the statistical mean
 
 \begin{corollary}[Sequential factorization and Hadamard's inequality]
   \label{cor:hadamard}
-  Let $V^{k-1} \coloneq \operatorname{span}\{v_{1},\dots,v_{k-1}\}$ (with $V^{0} = \{0\}$) and $\phi_{k} \coloneq \theta(v_{k}, V^{k-1})$. Then the total volume of the parallelotope formed by the vectors is bounded by the product of their lengths:
+  Let $V^{k-1} \coloneq \operatorname{span}\{v_{1},\dots,v_{k-1}\}$ (with $V^{0} = \{0\}$) and $\psi_{k} \coloneq \theta(v_{k}, V^{k-1})$. Then the total volume of the parallelotope formed by the vectors is bounded by the product of their lengths:
   \begin{equation}    \label{eq:hadamard}
     \det G = \prod_{k=1}^{n} \dist^{2}(v_{k}, V^{k-1})
-    = \prod_{k=1}^{n} G_{k,k} \sin^{2}\phi_{k}
+    = \prod_{k=1}^{n} G_{k,k} \sin^{2}\psi_{k}
     \le  \prod_{k=1}^{n} G_{k,k}
   \end{equation}
 \end{corollary}
 
 \begin{proof}
-  We use induction on $n$ with \Crefdefpart{lem:projection}{itm:projection-determinant}. The Gram matrix of $v_{1},\ldots,v_{k}$ is the bordering of the Gram matrix of $v_{1},\ldots,v_{k-1}$ by $v_{k}$. Thus, its determinant is the previous determinant multiplied by the squared orthogonal distance $\dist^{2}(v_{k}, V^{k-1})$. The base case $n=1$ is trivially $\det G = \norm{v_{1}}^{2}$. The inequality follows from $\sin^{2}\phi_{k} \le 1$, with equality holding throughout if and only if the family is mutually orthogonal.
+  We use induction on $n$ with \Crefdefpart{lem:projection}{itm:projection-determinant}. The Gram matrix of $v_{1},\ldots,v_{k}$ is the bordering of the Gram matrix of $v_{1},\ldots,v_{k-1}$ by $v_{k}$. Thus, its determinant is the previous determinant multiplied by the squared orthogonal distance $\dist^{2}(v_{k}, V^{k-1})$. The base case $n=1$ is trivially $\det G = \norm{v_{1}}^{2}$. The inequality follows from $\sin^{2}\psi_{k} \le 1$, with equality holding throughout if and only if the family is mutually orthogonal.
 \end{proof}
-
-There is a fundamental asymmetry between \eqref{eq:hadamard} and \eqref{eq:minor-angle}: the angles $\phi_{k}$ are \emph{sequential} (each vector is evaluated only against its predecessors and therefore depends strongly on ordering), whereas $\theta_{i}$ is defined against \emph{all} other vectors. Only $\theta_{i}$ is permutation invariant, and only it answers how independently coordinate $i$ is determined.
+There is a fundamental asymmetry between \eqref{eq:hadamard} and \eqref{eq:minor-angle}: the angles $\psi_{k}$ are \emph{sequential} (each vector is evaluated only against its predecessors and therefore depends strongly on ordering), whereas $\theta_{i}$ is defined against \emph{all} other vectors. Only $\theta_{i}$ is permutation invariant, and only it answers how independently coordinate $i$ is determined.
 
 \subsection{Off-diagonal entries: the dual basis and partial correlation}
 
@@ -235,9 +363,9 @@ There is a fundamental asymmetry between \eqref{eq:hadamard} and \eqref{eq:minor
     \label{eq:dual-gram}
   \end{align}
   showing that $G^{-1}$ is itself the Gram matrix of the dual basis. Moreover, the dual basis vectors are
-  \begin{equation}\label{eq:dual-residual}
+  \begin{equation*}
     w_{i} = \frac{r_{i|-i}}{\norm{r_{i|-i}}^{2}}
-  \end{equation}
+  \end{equation*}
   To see this, note that $\inner{w_{i}, v_{j}} = \delta_{i,j}$ means $w_{i} \perp v_{j}$ for every $j \neq i$, hence $w_{i} \perp S_{-i}$. Also $w_{i} \in V \coloneq \operatorname{span}\{v_{1},\ldots,v_{n}\}$. Since $\dim V - \dim S_{-i} = 1$, the orthogonal complement of $S_{-i}$ inside $V$ is a single line, which contains both $w_{i}$ and the non-zero residual $r_{i|-i} \neq 0$. Thus $w_{i} = c r_{i|-i}$. Further, $\inner{w_{i}, v_{i}} = \inner{w_{i}, r_{i|-i}} = c\norm{r_{i|-i}}^{2}$, which gives the normalization factor $c = 1/\norm{r_{i|-i}}^{2}$.
 
   Taking $j = i$ in \eqref{eq:dual-gram} recovers $(G^{-1})_{i,i} = 1/\norm{r_{i|-i}}^{2}$, in agreement with \Cref{prop:minor-angle}. Taking $j \neq i$ and normalizing yields the geometric cosine between residuals:
@@ -250,7 +378,7 @@ There is a fundamental asymmetry between \eqref{eq:hadamard} and \eqref{eq:minor
 
 \begin{proposition}[Off-diagonal ratio and partial correlation]
   \label{prop:partial-corr}
-  Fix $i \neq j$, let $S_{-i,-j} \coloneq \operatorname{span}\{v_{k}\}_{k \neq i,j}$ (the ``control'' subspace), and let $r_{i|-i,-j} \coloneq v_{i} - P_{S_{-i,-j}} v_{i}$ and $r_{j|-i,-j} \coloneq v_{j|-i,-j} - P_{S_{-i,-j}} v_{j}$ be the residuals after projecting out only the other $n-2$ vectors. Then the partial correlation---the correlation between $v_{i}$ and $v_{j}$ after removing the linear effects of all other variables---is:
+  Fix $i \neq j$, let $S_{-i,-j} \coloneq \operatorname{span}\{v_{k}\}_{k \neq i,j}$ (the ``control'' subspace), and let $r_{i|-i,-j} \coloneq v_{i} - P_{S_{-i,-j}} v_{i}$ and $r_{j|-i,-j} \coloneq v_{j} - P_{S_{-i,-j}} v_{j}$ be the residuals after projecting out only the other $n-2$ vectors. Then the partial correlation---the correlation between $v_{i}$ and $v_{j}$ after removing the linear effects of all other variables---is:
   \begin{equation} \label{eq:partial-corr}
     \begin{aligned}
       \rho_{i,j |-i,-j}
@@ -263,21 +391,25 @@ There is a fundamental asymmetry between \eqref{eq:hadamard} and \eqref{eq:minor
 
 \begin{proof}
   It suffices to take $i = n-1$ and $j = n$ by reordering the system. Partition the matrix into blocks accordingly:
+  \begin{equation*}
+    G =
+    \begin{bmatrix}
+      A & B \\
+      B^{\prime} & D
+    \end{bmatrix},\quad  A \in \mathbb{R}^{(n-2)\times(n-2)}
+  \end{equation*}
+  where
   \begin{align*}
-    G &=
-    \begin{pmatrix}
-      A & B \\ B^{\prime} & D
-    \end{pmatrix},
-    \quad
-    A \in \mathbb{R}^{(n-2)\times(n-2)},\\
     B_{k,n-1} &= \inner{v_{k}, v_{n-1}}, \quad
     B_{k,n} = \inner{v_{k}, v_{n}},\\
     D_{n-1,n-1} &= \inner{v_{n-1}, v_{n-1}}, \; D_{n,n} = \inner{v_{n}, v_{n}}\\
     D_{n-1,n} &= D_{n,n-1} = \inner{v_{n-1}, v_{n}}
   \end{align*}
-  where $k$ ranges over the $n-2$ remaining indices. Block inversion (the $2\times 2$ block version of the $\mathrm{LDL}^{\prime}$ factorization) dictates that the trailing block of $G^{-1}$ is the inverse of the Schur complement:
+  and $k$ ranges over the $n-2$ remaining indices.
+
+  Block inversion (the $2\times 2$ block version of the $\mathrm{LDL}^{\prime}$ factorization) dictates that the trailing block of $G^{-1}$ is the inverse of the Schur complement:
   \begin{equation}
-    [(G)^{-1}]_{n-1:n,n-1:n} = H^{-1},
+    [G^{-1}]_{n-1:n,\,n-1:n} = H^{-1},
     \quad H \coloneq D - B^{\prime} A^{-1} B
     \label{eq:block-inverse}
   \end{equation}
@@ -286,7 +418,7 @@ There is a fundamental asymmetry between \eqref{eq:hadamard} and \eqref{eq:minor
   \begin{bmatrix}
     H_{1,1} & H_{1,2} \\
     H_{2,1} & H_{2,2}
-  \end{bmatrix}$ is precisely the Gram matrix of $(r_{n-1|1:n-2}, r_{n|1:n-2})$. By \Crefdefpart{lem:projection}{itm:projection}, $P_{S_{1:n-2}} v_{n-1} = \sum_{k=1}^{n-2} c^{(n-1)}_{k} v_{k}$ with $c^{(n-1)} = A^{-1} B_{:,n-1}$. Because the error $r_{n-1|1:n-2}$ is orthogonal to the control subspace $S_{1:n-2}$ while the projection $v_{n} - r_{n|1:n-2} \in S_{1:n-2}$, we get:
+  \end{bmatrix}$, is precisely the Gram matrix of $(r_{n-1|1:n-2}, r_{n|1:n-2})$. Its diagonal entries are the two instances of \Crefdefpart{lem:projection}{itm:projection-squared-norm} with $u = v_{n-1}$ and $u = v_{n}$; the off-diagonal entry is computed as follows. By \Crefdefpart{lem:projection}{itm:projection}, $P_{S_{1:n-2}} v_{n-1} = \sum_{k=1}^{n-2} c^{(n-1)}_{k} v_{k}$ with $c^{(n-1)} = A^{-1} B_{:,n-1}$. Because the error $r_{n-1|1:n-2}$ is orthogonal to the control subspace $S_{1:n-2}$ while the projection $v_{n} - r_{n|1:n-2} \in S_{1:n-2}$, we get:
   \begin{equation*}
     \begin{aligned}
       \inner{r_{n-1|1:n-2}, r_{n|1:n-2}}
@@ -313,11 +445,11 @@ There is a fundamental asymmetry between \eqref{eq:hadamard} and \eqref{eq:minor
   Substituting \eqref{eq:block-inverse} and rewriting $(G^{-1})_{i,j} = C_{i,j}/\det G$ in cofactor form yields \eqref{eq:partial-corr}.
 \end{proof}
 
-The minus sign in \eqref{eq:partial-corr} is not an arbitrary statistical convention: it comes directly from the off-diagonal sign of the $2 \times 2$ adjugate. Comparing \eqref{eq:cos-full-residual} with \eqref{eq:partial-corr} reveals a geometric sign flip:
+The minus sign in \eqref{eq:partial-corr} is not an arbitrary statistical convention: it comes directly from the off-diagonal sign of the $2 \times 2$ adjugate. For the $n=2$ case of \Cref{ex:n2}, comparing \eqref{eq:cos-full-residual} with \eqref{eq:partial-corr} yields the sign flip
 \begin{equation}  \label{eq:sign-flip}
-  \cos\angle(r_{i}, r_{j}) = -\cos\angle(r_{i|-i,-j}, r_{j|-i,-j})
+  \cos\angle(r_{1|-1}, r_{2|-2}) = -\cos\angle(v_{1}, v_{2}) = -\rho ,
 \end{equation}
-This highlights that the residuals in \Cref{prop:minor-angle} are \emph{not} the same as those in \Cref{prop:partial-corr}. Additionally, projecting $v_{j}$ out of $v_{i}$ (and vice versa) reverses the sign of the cosine, and the leading minus sign in the partial-correlation formula compensates for this reversal.
+since $S_{-1,-2} = \{0\}$ and therefore $r_{1|-1,-2} = v_{1}$, $r_{2|-1,-2} = v_{2}$. For general $n$, the two families of residuals live in different subspaces and their cosines are not simply opposite; the correct unsigned relationship is that the two pairs share the same principal angle (\Cref{rem:partial-as-angle}). The leading minus sign in the partial-correlation formula compensates for the reversal caused by projecting $v_{j}$ out of $v_{i}$ and vice versa.
 
 \begin{example}[$n = 2$]
   \label{ex:n2}
@@ -329,86 +461,263 @@ This highlights that the residuals in \Cref{prop:minor-angle} are \emph{not} the
   \begin{bmatrix}
     1 & -\rho \\
     -\rho & 1
-  \end{bmatrix}$. \Cref{prop:partial-corr} returns $\rho_{12} = \rho$ (as there are no other variables $S_{i,j}$ to partial out).
+  \end{bmatrix}$. \Cref{prop:partial-corr} returns $\rho_{1,2} = \rho$, since there is no control subspace to partial out ($S_{-1,-2} = \{0\}$).
 
   Meanwhile, the individual residuals from projecting onto each other are $r_{1} = v_{1} - \rho v_{2}$ and $r_{2} = v_{2} - \rho v_{1}$. These satisfy $\inner{r_{1}, r_{2}} = -\rho(1-\rho^{2})$ and $\norm{r_{1}}^{2} = \norm{r_{2}}^{2} = 1-\rho^{2}$, giving $\cos\angle(r_{1},r_{2}) = -\rho$, which illustrates the sign flip in \eqref{eq:sign-flip}. We also observe $\sin^{2}\theta_{1} = 1 - \rho^{2}$ and $(G^{-1})_{1,1} = 1/(1-\rho^{2})$, matching the VIF formulation.
 \end{example}
 
-\subsection{Principal angles for block parameters}\label{subsec:principal-angles-block}
+\subsection{The Cram\'er--Rao lower bound}
+\label{subsec:crlb}
 
-The scalar angle $\theta_{i}$ is the one-dimensional special case of a broader subspace-to-subspace geometry. For a block of parameters of interest, this broader view gives a compact multivariate nuisance-penalty formula, and it makes precise which parts of the preceding identities are coordinate artifacts and which are intrinsic.
+We now translate this geometry into statistical estimation and quantify how correlated nuisance parameters limit attainable accuracy.
 
-Let the score vector be partitioned as
+For a parametric model with density $f(x;\vartheta)$, the likelihood function is
+$L(\vartheta; x) \coloneq f(x;\vartheta)$ and the corresponding log-likelihood is
+$\ell(\vartheta; x) \coloneq \log f(x;\vartheta)$. The score function with respect to the
+$i$-th parameter is
 \begin{equation*}
-  \dot{\ell} =
-  \begin{bmatrix}
-    \dot{\ell}_{a} \\
-    \dot{\ell}_{b}
-  \end{bmatrix},
-  \quad
-  \mathbf{F} =
-  \begin{pmatrix}
-    \mathbf{F}_{aa} & \mathbf{F}_{ab} \\
-    \mathbf{F}_{ba} & \mathbf{F}_{bb}
-  \end{pmatrix},
+  \dot{\ell}_{i}(x;\vartheta) \coloneq \partial_{i} \log f(x;\vartheta)
 \end{equation*}
-where $\dot{\ell}_{a} \in \mathbb{R}^{p}$ is the interest block and $\dot{\ell}_{b} \in \mathbb{R}^{q}$ is nuisance, and write
-\begin{equation*}
-  S_{a} \coloneq \operatorname{span}\{\dot{\ell}_{a,1},\ldots,\dot{\ell}_{a,p}\},
-  \quad
-  S_{b} \coloneq \operatorname{span}\{\dot{\ell}_{b,1},\ldots,\dot{\ell}_{b,q}\}
-\end{equation*}
-for the two score subspaces of $L^{2}(p)$. The efficient information for $\vartheta_{a}$ is the Schur complement
-\begin{equation}
-  \mathbf{S}_{a\mid b}
-  \coloneq
-  \mathbf{F}_{aa} - \mathbf{F}_{ab}\mathbf{F}_{bb}^{-1}\mathbf{F}_{ba},
-  \label{eq:eff-info-block}
-\end{equation}
-and by the block Cram\'er--Rao bound, for unbiased estimators,
-\begin{equation}
-  \cov(\hat{\vartheta}_{a}) \succeq \mathbf{S}_{a\mid b}^{-1}.
-  \label{eq:block-crlb}
-\end{equation}
+The collection of score functions forms a family of random variables in $L^{2}(P_{\vartheta})$. In the language of information geometry \cite{amari2000}, the parametric model forms a Riemannian manifold where the score functions act as the natural basis vectors for the tangent space $T_{\vartheta} \mathcal{M}$ at $\vartheta$. Their covariance structure, the Fisher information matrix, is precisely the Riemannian metric tensor---the Fisher--Rao metric---evaluated at that point. Throughout this subsection and the next we assume the usual regularity conditions---$f(\cdot;\vartheta) > 0$, differentiation under the integral sign permitted, scores square integrable---and, as the counterpart of the linear-independence assumption of \Cref{sec:minor-angle}, that $\mathbf{F}(\vartheta) \succ 0$, so that every principal block of $\mathbf{F}$ is invertible.
 
-\subsubsection{Definition and the whitened cross-information}
-
-\begin{definition}[Principal angles]\label{def:principal-angles}
-  Let $S_{a}, S_{b} \subseteq \mathcal{H}$ be subspaces of dimensions $p$ and $q$, and set $r \coloneq \min(p,q)$. The principal angles $0 \le \phi_{1} \le \cdots \le \phi_{r} \le \pi/2$ and principal vectors $(y_{k}, z_{k})$ are defined recursively by
-  \begin{equation}
-    \cos\phi_{k}
-    = \max_{\norm{y}=\norm{z}=1} \bigl\{\inner{y, z} \colon y \in S_{a},\, z \in S_{b}  \bigr\}
-    = \inner{y_{k}, z_{k}}
-    \label{eq:principal-angle-def}
-  \end{equation}
-  subject to $\inner{y, y_{\ell}} = \inner{z, z_{\ell}} = 0$ for $\ell < k$. When $p > q$ we adopt the convention $\phi_{k} \coloneq \pi/2$ for $q < k \le p$, so that a full list of $p$ angles is always available.
+\begin{definition}[Cram\'er--Rao lower bound]
+  Let $\vartheta \in \mathbb{R}^{n}$ parameterize a statistical model with Fisher information matrix $\mathbf{F}(\vartheta)$. For any unbiased estimator $\hat{\vartheta}$ of $\vartheta$, the covariance matrix satisfies
+  \begin{equation*}
+    \cov(\hat{\vartheta}) \succeq \mathbf{F}(\vartheta)^{-1}
+  \end{equation*}
+  In particular, the variance of each component obeys
+  \begin{equation*}
+    \var(\hat{\vartheta}_{i}) \ge (\mathbf{F}^{-1})_{i,i}
+  \end{equation*}
+  and the right-hand side is called the Cram\'er--Rao lower bound (CRLB) for $\vartheta_{i}$.
 \end{definition}
 
-Thus $\phi_{1}$ is the smallest angle any pair of directions from the two subspaces can make, and each subsequent angle is measured after deflating the directions already used. Two degenerate cases fix the scale: $\phi_{k}=0$ for $k \le m$ exactly when $\dim(S_{a} \cap S_{b}) = m$, and all $\phi_{k} = \pi/2$ exactly when $S_{a} \perp S_{b}$.
-
-Define the whitened cross-information matrix
-\begin{equation}
-  \mathbf{C}
-  \coloneq
-  \mathbf{F}_{aa}^{-1/2}\mathbf{F}_{ab}\mathbf{F}_{bb}^{-1/2}.
-  \label{eq:whitened-cross}
-\end{equation}
-
-\begin{lemma}[$\mathbf{C}$ is a cross-Gram matrix of orthonormal bases]
-  \label{lem:whitened-angles}
-  Let $u_{a} \coloneq \mathbf{F}_{aa}^{-1/2}\dot{\ell}_{a}$ and $u_{b} \coloneq \mathbf{F}_{bb}^{-1/2}\dot{\ell}_{b}$. Then the entries of $u_{a}$ form an orthonormal basis of $S_{a}$, those of $u_{b}$ an orthonormal basis of $S_{b}$, and
-  \begin{equation}
-    \mathbf{C} = \E\bigl[u_{a} u_{b}^{\prime}\bigr].
-    \label{eq:C-cross-gram}
+\begin{corollary}[Nuisance penalty in the Cram\'er--Rao lower bound]
+  \label{cor:crb}
+  Let $\mathbf{F}$ be the Fisher information matrix for a parameter vector $\vartheta \in \mathbb{R}^{n}$. By definition, $\mathbf{F}_{i,j} = \E\bigl[\partial_{i} \log f \, \partial_{j} \log f\bigr]$ is the Gram matrix of the score functions $\dot{\ell}_{i} \coloneq \partial_{i} \log f$ in the Hilbert space $L^{2}(P_{\vartheta})$ under the inner product $\inner{a, b} \coloneq \E[ab]$. Then any unbiased estimator satisfies $\var(\hat\vartheta_{i}) \ge \operatorname{CRLB}(\vartheta_{i})$ with
+  \begin{equation}\label{eq:crb-angle}
+    \begin{aligned}
+      \operatorname{CRLB}(\vartheta_{i})
+      &= (\mathbf{F}^{-1})_{i,i}
+      = \frac{M_{i,i}}{\det \mathbf{F}} \\
+      &= \underbrace{\frac{1}{\mathbf{F}_{i,i}}}_{\substack{\text{single-parameter}\\\text{bound}}}
+      \cdot
+      \underbrace{\frac{1}{\sin^{2}\theta_{i}}}_{\substack{\text{nuisance}\\\text{penalty}}}
+      = \frac{1}{\mathbf{F}_{i,i}(1 - R_{i}^{2})}
+    \end{aligned}
   \end{equation}
-  Consequently, if $\mathbf{C} = Y \Sigma Z^{\prime}$ is a singular value decomposition, then $\sigma_{k}(\mathbf{C}) = \rho_{k} = \cos\phi_{k}$ for $k = 1,\ldots,r$, and the principal vectors are the entries of $Y^{\prime}u_{a}$ and $Z^{\prime}u_{b}$.
+  Here, $\theta_{i}$ is the angle in $L^{2}(P_{\vartheta})$ between the $i$-th score and the span $S_{-i}$ of the nuisance scores. The penalty equals unity if and only if the $i$-th score is orthogonal to all others (parameter orthogonality \cite{cox1987}). It diverges as $\csc^{2}\theta_{i}$ in the ill-conditioned regime where $\det \mathbf{F} \to 0$ while $M_{i,i}$ is bounded away from zero.
+\end{corollary}
+
+\begin{proof}
+  Under the regularity conditions above, the score functions lie in $L^{2}(P_{\vartheta})$ with mean zero, $\E[\dot{\ell}_{i}] = 0$. Consequently, $\mathbf{F}$ serves simultaneously as their covariance matrix and their geometric Gram matrix. The result follows by substituting $v_{i} = \dot{\ell}_{i}$ into \Cref{prop:minor-angle} and using the multiple correlation equivalence of \Cref{rem:R2}.
+\end{proof}
+
+\begin{remark}[Efficient score]
+  \label{rem:efficient-score}
+  Let $\dot{\ell}_{i}^{*} \coloneq \dot{\ell}_{i} - P_{S_{-i}}\dot{\ell}_{i}$ be the residual of the $i$-th score after orthogonally projecting out the nuisance scores. This is known in semiparametric theory \cite{bickel1993} as the \emph{efficient score} for the parameter component $\vartheta_{i}$. By \Cref{prop:minor-angle},
+  \begin{equation*}
+    \operatorname{CRLB}(\vartheta_{i})
+    = \frac{1}{\norm{\dot{\ell}_{i}^{*}}^{2}}
+    = \frac{1}{\E\bigl[(\dot{\ell}_{i}^{*})^{2}\bigr]}
+  \end{equation*}
+  This highlights a key statistical point: the achievable accuracy of estimating $\vartheta_{i}$ is determined not by the total sensitivity of the likelihood to $\vartheta_{i}$, but \emph{only} by the part of that sensitivity that nuisance parameters cannot mimic. It also shows that the penalty is a property of the \emph{subspace} $S_{-i}$, not of a particular parametrization of the nuisance block. Any reparametrization that keeps $\vartheta_{i}$ fixed while re-coordinatizing nuisance variables leaves $S_{-i}$---and therefore the optimal bound---unchanged.
+\end{remark}
+
+\begin{remark}[Information geometry and orthogonal coordinates]
+  \label{rem:info-geometry}
+  From the perspective of information geometry, because $\mathbf{F}(\vartheta)$ acts as the local metric tensor, the angle $\theta_{i}$ measures the geometric orthogonality of the parameter coordinate curves intersecting at $\vartheta$. When $\theta_{i} = \pi/2$ for all $i$, the metric tensor is diagonal, meaning the parameters form an orthogonal coordinate system on the statistical manifold. The nuisance penalty $\csc^{2}\theta_{i}$ in \eqref{eq:crb-angle} is the purely geometric cost of using a skewed, non-orthogonal coordinate grid to describe the manifold. Cox and Reid's parameter orthogonality \cite{cox1987} is, geometrically, the search for a local diffeomorphism (reparametrization) that orthogonalizes the tangent basis with respect to the Fisher--Rao metric, thereby eliminating the projection penalty.
+\end{remark}
+
+\begin{example}[Linear Gaussian model / collinearity]
+  \label{ex:linear-gaussian}
+  Let $y = A\vartheta + \varepsilon$ with $\varepsilon \sim \mathcal{N}(0, \sigma^{2} I)$ and
+  $A = [\,a_{1}, \ldots, a_{n}\,] \in \mathbb{R}^{N \times n}$ having full column rank. Then
+  the log-likelihood is $\log f = -\norm{y - A\vartheta}^{2}/(2\sigma^{2}) + \mathrm{const}$.
+  The score functions take the form $\dot{\ell}_{i} = a_{i}^{\prime} (y - A\vartheta)/\sigma^{2}$, leading to:
+  \begin{equation*}
+    \mathbf{F}_{i,j}
+    = \frac{a_{i}^{\prime} \E\bigl[(y-A\vartheta)(y-A\vartheta)^{\prime}\bigr] a_{j}}
+    {\sigma^{4}}
+    = \frac{a_{i}^{\prime} a_{j}}{\sigma^{2}}
+  \end{equation*}
+  Thus, the Fisher information matrix is the regressor Gram matrix $A^{\prime} A$ scaled by the noise variance. In this context, the parameter component $\vartheta_{i}$ is associated with the geometric angle in $\mathbb{R}^{N}$ between the column vector $a_{i}$ and the span of the remaining columns. Consequently:
+  \begin{equation} \label{eq:vif}
+    \operatorname{CRLB}(\vartheta_{i})
+    = \frac{\sigma^{2}}{\norm{a_{i}}^{2} \sin^{2}\theta_{i}}
+    = \frac{\sigma^{2}}{\norm{a_{i}}^{2}}\cdot\frac{1}{1 - R_{i}^{2}}
+  \end{equation}
+  Collinearity appears as a small angle. The regressor energy $\norm{a_{i}}^{2}$ (representing the signal strength of that variable) may be large, but if the vector lies too close to the hyperplane spanned by the other variables, the parameter estimate remains unreliable.
+\end{example}
+
+\begin{remark}[Regularization and superresolution]
+  \label{rem:regularization}
+  The geometric collapse in \Cref{ex:linear-gaussian} is exactly why Ridge regression
+  (Tikhonov regularization) adds a penalty term $\lambda I$ to the Gram matrix.
+  Geometrically, this inflates the lengths and opens the angles, bounding the variance at
+  the cost of introducing bias. The same geometry governs closely spaced components in
+  superresolution problems --- separating two nearby point sources in optics or in array
+  processing \cite{stoica1989} --- where $\sin\theta_{i} \to 0$ as the separation shrinks,
+  so that the error bounds diverge even at fixed signal-to-noise ratio. The block form of
+  this statement is \Cref{ex:principal-angles-superresolution}.
+\end{remark}
+
+\begin{remark}[Diagnostics and computational stability]
+  \label{rem:diagnostics}
+  The Cram\'er--Rao formulation shows that the determinant $\det\mathbf{F}$ alone---which is maximized in the D-optimality design criterion---cannot pinpoint \emph{which} parameter is poorly determined. By \Cref{cor:hadamard}, the determinant aggregates the sequential angles $\psi_{k}$ into a single overall volume metric. A small parallelotope volume communicates that the system is ill-conditioned, but says nothing about which coordinate is failing.
+
+  The true diagnostic quantity is the ratio $M_{i,i}/\det\mathbf{F}$, not either factor in isolation. Numerically, however, computing explicit determinants and minors is unsound: the products underflow or overflow in floating point, and cofactor expansion costs $O(n!)$ operations.
+
+  Instead, computationally stable diagnostics compute the Cholesky factorization $\mathbf{F} = LL^{\prime}$ in $O(n^{3})$ operations \cite{golub2013}. One can then obtain the inverse diagonal entries $(\mathbf{F}^{-1})_{i,i} = \norm{L^{-1}e_{i}}^{2}$ via standard forward/backward triangular solves, and finally read off the geometric angles using $\sin^{2}\theta_{i} = 1/(\mathbf{F}_{i,i}(\mathbf{F}^{-1})_{i,i})$.
+\end{remark}
+
+\subsection{Block parameters and the whitened cross-information}
+\label{subsec:principal-angles-block}
+
+Everything so far has been about a single coordinate. In practice the parameters of
+interest usually arrive as a group --- the position coordinates of one target among
+several, the regression coefficients of one factor among many, the parameters of one
+source cluster in \Cref{ex:principal-angles-superresolution} --- and the quantity to be
+bounded is then a matrix, $\cov(\hat{\vartheta}_{a})$, rather than a single variance. The
+natural question becomes how far the interest block as a whole is separated from the
+nuisance block.
+
+One might try to answer it coordinate by coordinate, applying \Cref{prop:minor-angle} to
+each $\vartheta_{i}$ in the interest block in turn. That yields $p$ correct scalar bounds,
+but they measure each coordinate against \emph{everything else}, including the other
+interest coordinates, and so report a mixture of two phenomena---coupling to the nuisance
+parameters, and coupling within the interest block---that a block analysis must keep
+apart (\Cref{rem:scalar-from-block}). The separation between two subspaces is not a single
+number in any case: it is the list of principal angles of \Cref{def:principal-angles},
+introduced in \Cref{sec:minor-angle} and used here for the first time. This subsection
+shows that they are exactly the angles carried by the efficient information, so that the
+scalar factorization \eqref{eq:crb-angle} becomes a product over principal angles;
+\Cref{prop:principal-variational,prop:block-vif} then locate the scalar bound inside the
+block picture, and \Cref{cor:fischer} places the resulting determinant identity beside
+Hadamard's.
+
+\subsubsection{The efficient information and the whitened cross-information}
+
+Partition $\vartheta = (\vartheta_{a}, \vartheta_{b})$ into an interest block of dimension
+$p$ and a nuisance block of dimension $q$, block $\mathbf{F}$ conformably, and write
+$S_{a}, S_{b} \subseteq L^{2}(P_{\vartheta})$ for the subspaces spanned by the entries of the
+score blocks $\dot{\ell}_{a}$ and $\dot{\ell}_{b}$. Block-inverting $\mathbf{F}$ (the general block form of \eqref{eq:block-inverse}) gives
+$(\mathbf{F}^{-1})_{aa} = \mathbf{S}_{a\mid b}^{-1}$, so the block CRLB for the interest
+parameters is governed by the Schur complement
+\begin{equation}
+  \cov(\hat{\vartheta}_{a}) \succeq \mathbf{S}_{a\mid b}^{-1},
+  \qquad
+  \mathbf{S}_{a\mid b}
+  \coloneq \mathbf{F}_{aa} - \mathbf{F}_{ab}\mathbf{F}_{bb}^{-1}\mathbf{F}_{ba},
+  \label{eq:eff-info-block}
+\end{equation}
+the \emph{efficient information} for $\vartheta_{a}$; by
+\Crefdefpart{lem:projection}{itm:projection-squared-norm} it is the Gram matrix of the
+residuals of $\dot{\ell}_{a}$ after projecting out $S_{b}$, so \eqref{eq:eff-info-block} is
+the block form of \Cref{rem:efficient-score}.
+
+Written this way, $\mathbf{S}_{a\mid b}$ is a difference of matrices and shows no geometry.
+To expose the angles, put both blocks on a common footing by whitening each with its own
+information, which turns the coupling term into a cross-Gram matrix of orthonormal bases;
+principal angles are then computed, rather than found recursively, from its singular values.
+
+\begin{lemma}[Singular values of a cross-Gram matrix]\label{lem:cross-gram-angles}
+  Let $e = (e_{1},\ldots,e_{p})^{\prime}$ and $f = (f_{1},\ldots,f_{q})^{\prime}$ collect
+  orthonormal bases of $S_{a}$ and $S_{b}$, and let
+  \begin{equation}
+    K \coloneq \bigl[\inner{e_{i}, f_{j}}\bigr]_{1 \le i \le p,\ 1 \le j \le q}
+    \label{eq:cross-gram-def}
+  \end{equation}
+  be the associated cross-Gram matrix. If $K = Y D Z^{\prime}$ is a singular value
+  decomposition, then $\sigma_{k}(K) = \cos\phi_{k}$ for $k = 1,\ldots,\nu$, and the principal
+  vectors are the entries of $Y^{\prime}e$ and $Z^{\prime}f$.
 \end{lemma}
 
 \begin{proof}
-  Since $\E[\dot{\ell}_{a}\dot{\ell}_{a}^{\prime}] = \mathbf{F}_{aa}$, we get $\E[u_{a}u_{a}^{\prime}] = \mathbf{F}_{aa}^{-1/2}\mathbf{F}_{aa}\mathbf{F}_{aa}^{-1/2} = I$, so the entries of $u_{a}$ are orthonormal in $L^{2}(p)$; they span $S_{a}$ because $\mathbf{F}_{aa}^{-1/2}$ is invertible. The same argument applies to $u_{b}$, and \eqref{eq:C-cross-gram} follows from $\E[u_{a}u_{b}^{\prime}] = \mathbf{F}_{aa}^{-1/2}\mathbf{F}_{ab}\mathbf{F}_{bb}^{-1/2}$. The identification of the singular values with $\cos\phi_{k}$ is the standard characterization of \Cref{def:principal-angles}: for orthonormal bases, $\inner{Y^{\prime}u_{a}, Z^{\prime}u_{b}}$ is diagonalized precisely by the singular vectors of the cross-Gram matrix, and the recursive maximization in \eqref{eq:principal-angle-def} is the variational characterization of the singular values.
+  For unit vectors $y = \alpha^{\prime}e \in S_{a}$ and $z = \beta^{\prime}f \in S_{b}$,
+  orthonormality of the bases gives $\norm{y} = \norm{\alpha}$, $\norm{z} = \norm{\beta}$ and
+  $\inner{y,z} = \alpha^{\prime}K\beta$. The recursion \eqref{eq:principal-angle-def} therefore
+  reads $\cos\phi_{k} = \max\{\alpha^{\prime}K\beta \colon \norm{\alpha} = \norm{\beta} = 1,\
+  \alpha \perp \alpha_{\ell},\ \beta \perp \beta_{\ell},\ \ell < k\}$, which is exactly the
+  variational characterization of the $k$th singular value of $K$ \cite[Sec.~7.3]{horn2013},
+  attained at the $k$th pair of singular vectors.
 \end{proof}
 
-The Schur complement \eqref{eq:eff-info-block} now factors as
+\begin{corollary}[Angle form of the Gram determinant]\label{cor:angle-determinant}
+  With $K$ as in \eqref{eq:cross-gram-def}, the eigenvalues of $I - KK^{\prime}$ are
+  $\sin^{2}\phi_{1}, \ldots, \sin^{2}\phi_{p}$, and consequently
+  \begin{equation}
+    \det\bigl(I - KK^{\prime}\bigr) = \prod_{k=1}^{p} \bigl(1 - \cos^{2}\phi_{k}\bigr)
+    = \prod_{k=1}^{p} \sin^{2}\phi_{k}.
+    \label{eq:angle-determinant}
+  \end{equation}
+\end{corollary}
+
+\begin{proof}
+  $KK^{\prime}$ is $p \times p$ with eigenvalues $\sigma_{k}(K)^{2} = \cos^{2}\phi_{k}$ for
+  $k \le \nu$ and $p - \nu$ additional zeros, which match $\cos^{2}\phi_{k} = 0$ under the
+  convention of \Cref{def:principal-angles}.
+\end{proof}
+
+The next lemma is stated for an arbitrary pair of families, since it is applied twice: to
+score functions here, and to Gaussian coordinates in \Cref{subsec:canonical-gaussian}. Only
+the Gram structure is used.
+
+\begin{lemma}[Whitened cross-Gram matrices]
+  \label{lem:whitened-angles}
+  Let $w_{a} = (w_{a,1},\ldots,w_{a,p})^{\prime}$ and $w_{b} = (w_{b,1},\ldots,w_{b,q})^{\prime}$
+  be linearly independent families in a real inner product space, spanning $S_{a}$ and
+  $S_{b}$, with Gram blocks
+  $\Gamma_{aa} = \gram(w_{a})$, $\Gamma_{bb} = \gram(w_{b})$ and
+  $\Gamma_{ab} = \bigl[\inner{w_{a,i},w_{b,j}}\bigr]$. Set
+  $u_{a} \coloneq \Gamma_{aa}^{-1/2}w_{a}$ and $u_{b} \coloneq \Gamma_{bb}^{-1/2}w_{b}$.
+  Then the entries of $u_{a}$ form an orthonormal basis of $S_{a}$, those of $u_{b}$ an
+  orthonormal basis of $S_{b}$, and
+  \begin{equation}
+    \Gamma_{aa}^{-1/2}\Gamma_{ab}\Gamma_{bb}^{-1/2}
+    = \bigl[\inner{u_{a,i}, u_{b,j}}\bigr]
+    \label{eq:C-cross-gram}
+  \end{equation}
+  is their cross-Gram matrix. Consequently its singular values are
+  $\cos\phi_{1},\ldots,\cos\phi_{\nu}$, the principal angles being those between $S_{a}$ and
+  $S_{b}$, and if $Y D Z^{\prime}$ is a singular value decomposition of
+  \eqref{eq:C-cross-gram} the principal vectors are the entries of $Y^{\prime}u_{a}$ and
+  $Z^{\prime}u_{b}$.
+\end{lemma}
+
+\begin{proof}
+  Since $\gram(w_{a}) = \Gamma_{aa}$, the Gram matrix of $u_{a}$ is
+  $\Gamma_{aa}^{-1/2}\Gamma_{aa}\Gamma_{aa}^{-1/2} = I$, so the entries of $u_{a}$ are
+  orthonormal; they span $S_{a}$ because $\Gamma_{aa}^{-1/2}$ is invertible. The same
+  argument applies to $u_{b}$. Bilinearity of the inner product gives
+  $\bigl[\inner{u_{a,i},u_{b,j}}\bigr] = \Gamma_{aa}^{-1/2}\Gamma_{ab}\Gamma_{bb}^{-1/2}$,
+  which is the cross-Gram matrix \eqref{eq:cross-gram-def} of two orthonormal bases, so
+  \Cref{lem:cross-gram-angles} applies.
+\end{proof}
+
+\begin{remark}[Any whitening will do]
+  \label{rem:whitening-choice}
+  Replacing $\Gamma_{aa}^{-1/2}$ by $L_{a}^{-1}$ for any factor
+  $\Gamma_{aa}=L_{a}L_{a}^{\prime}$ changes $u_{a}$ to another orthonormal basis of the same
+  subspace, hence alters the cross-Gram matrix only by orthogonal equivalence and leaves
+  every singular value fixed. \Cref{lem:cross-gram-angles} is a statement about $S_{a}$ and
+  $S_{b}$, not about the chosen bases; this is what licenses the Cholesky route of
+  \Cref{rem:angle-computation}.
+\end{remark}
+
+Applying \Cref{lem:whitened-angles} to the score families, with $\Gamma = \mathbf{F}$, define
+the whitened cross-information matrix
+\begin{equation}
+  \mathbf{C}
+  \coloneq
+  \mathbf{F}_{aa}^{-1/2}\mathbf{F}_{ab}\mathbf{F}_{bb}^{-1/2}
+  = \E\bigl[u_{a}u_{b}^{\prime}\bigr],
+  \label{eq:whitened-cross}
+\end{equation}
+where $u_{a} = \mathbf{F}_{aa}^{-1/2}\dot{\ell}_{a}$ and
+$u_{b} = \mathbf{F}_{bb}^{-1/2}\dot{\ell}_{b}$; its singular values are
+$\sigma_{k}(\mathbf{C}) = \rho_{k} = \cos\phi_{k}$ for $k = 1,\ldots,\nu$. The Schur
+complement \eqref{eq:eff-info-block} then factors as
 \begin{equation}
   \mathbf{S}_{a\mid b}
   =
@@ -417,7 +726,9 @@ The Schur complement \eqref{eq:eff-info-block} now factors as
   \mathbf{F}_{aa}^{1/2},
   \label{eq:eff-info-factor}
 \end{equation}
-so that the eigenvalues of $I - \mathbf{C}\mathbf{C}^{\prime}$ are exactly $\sin^{2}\phi_{1}, \ldots, \sin^{2}\phi_{p}$. Taking determinants gives the multivariate nuisance-penalty factorization:
+so by \Cref{cor:angle-determinant} the eigenvalues of $I - \mathbf{C}\mathbf{C}^{\prime}$ are
+exactly $\sin^{2}\phi_{1}, \ldots, \sin^{2}\phi_{p}$. Taking determinants gives the multivariate
+nuisance-penalty factorization:
 \begin{equation}
   \det \mathbf{S}_{a\mid b}
   =
@@ -428,13 +739,14 @@ so that the eigenvalues of $I - \mathbf{C}\mathbf{C}^{\prime}$ are exactly $\sin
   \prod_{k=1}^{p} \sin^{2}\phi_{k}.
   \label{eq:block-penalty-product}
 \end{equation}
-Each principal angle contributes one geometric penalty term, and small principal angles ($\phi_{k} \to 0$) create near-nonidentifiable directions in the interest block.
+Each principal angle contributes one geometric penalty term, and small principal angles
+($\phi_{k} \to 0$) create near-nonidentifiable directions in the interest block.
 
 \subsubsection{Relation to the scalar angle: a variational bracket}
 
 \begin{proposition}[Principal angles as stationary values]
   \label{prop:principal-variational}
-  For a unit vector $c \in \mathbb{R}^{p}$, let $\tilde{u}_{c} \coloneq c^{\prime}u_{a} \in S_{a}$, which has unit norm in $L^{2}(p)$. Then
+  For a unit vector $c \in \mathbb{R}^{p}$, let $\tilde{u}_{c} \coloneq c^{\prime}u_{a} \in S_{a}$, which has unit norm in $L^{2}(P_{\vartheta})$. Then
   \begin{equation}
     \cos^{2}\theta(\tilde{u}_{c}, S_{b}) = c^{\prime}\mathbf{C}\mathbf{C}^{\prime}c ,
     \label{eq:angle-rayleigh}
@@ -451,11 +763,11 @@ Each principal angle contributes one geometric penalty term, and small principal
   Because the entries of $u_{b}$ are an orthonormal basis of $S_{b}$, $P_{S_{b}}\tilde{u}_{c} = \sum_{k}\inner{\tilde{u}_{c}, u_{b,k}} u_{b,k}$ and hence $\norm{P_{S_{b}}\tilde{u}_{c}}^{2} = \norm{\E[\tilde{u}_{c}u_{b}^{\prime}]}^{2} = \norm{c^{\prime}\mathbf{C}}^{2} = c^{\prime}\mathbf{C}\mathbf{C}^{\prime}c$; dividing by $\norm{\tilde{u}_{c}}^{2}=1$ and using the definition of $\theta$ gives \eqref{eq:angle-rayleigh}. The right-hand side is a Rayleigh quotient of $\mathbf{C}\mathbf{C}^{\prime}$, whose stationary values and extremes are its eigenvalues $\cos^{2}\phi_{k}$ by Courant--Fischer. Every $y \in S_{a}$ is of the form $\tilde{u}_{c}$ after normalization, which gives \eqref{eq:angle-bracket}.
 \end{proof}
 
-\begin{remark}[Recovering the scalar angle, and what the two angles do not share]
+\begin{remark}[What the block and coordinate angles do not share]
   \label{rem:scalar-from-block}
-  Take $a = \{i\}$ and $b = \{1,\ldots,n\}\setminus\{i\}$, so $p=1$ and $c=1$. Then $\mathbf{C}\mathbf{C}^{\prime} = \mathbf{F}_{i,-i}\mathbf{F}_{-i,-i}^{-1}\mathbf{F}_{-i,i}/\mathbf{F}_{i,i}$, which by \Crefdefpart{lem:projection}{itm:projection-squared-norm} is exactly $R_{i}^{2}$ of \eqref{eq:R2}. There is a single principal angle, it equals $\theta_{i}$, and \eqref{eq:block-penalty-product} collapses to \Cref{prop:minor-angle} with nuisance inflation factor $1/\sin^{2}\theta_{i}$.
+  Taking $a = \{i\}$ and $b = \{1,\ldots,n\}\setminus\{i\}$ gives $p=1$, $c=1$, and $\mathbf{C}\mathbf{C}^{\prime} = \mathbf{F}_{i,-i}\mathbf{F}_{-i,-i}^{-1}\mathbf{F}_{-i,i}/\mathbf{F}_{i,i}$, which by \Crefdefpart{lem:projection}{itm:projection-squared-norm} is exactly $R_{i}^{2}$ of \eqref{eq:R2}; consistently with \Cref{rem:angle-consistency}, the single principal angle is $\theta_{i}$ and \eqref{eq:block-penalty-product} collapses to \Cref{prop:minor-angle}.
 
-  The converse direction requires care. For $p > 1$, the scalar angles $\theta_{i}$ of the interest coordinates are \emph{not} the principal angles $\phi_{k}$, and are not even bracketed by them: $\theta_{i}$ is measured against $S_{-i}$, which contains the other interest scores as well as $S_{b}$, whereas \eqref{eq:angle-bracket} concerns angles against $S_{b}$ alone. Since $S_{b} \subseteq S_{-i}$ and enlarging a subspace can only decrease the angle to it,
+  The converse direction requires care. For $p > 1$, the scalar angles $\theta_{i}$ of the interest coordinates are \emph{not} the principal angles $\phi_{k}$. They are bounded above by $\phi_{p}$, but admit no lower bound in terms of $\phi_{1}$: $\theta_{i}$ is measured against $S_{-i}$, which contains the other interest scores as well as $S_{b}$, whereas \eqref{eq:angle-bracket} concerns angles against $S_{b}$ alone. Since $S_{b} \subseteq S_{-i}$ and enlarging a subspace can only decrease the angle to it,
   \begin{equation}
     \sin\theta_{i} \le \sin\theta(\dot{\ell}_{a,i}, S_{b}) \le \sin\phi_{p} ,
     \label{eq:theta-phi-order}
@@ -483,9 +795,9 @@ Each principal angle contributes one geometric penalty term, and small principal
 
 \begin{remark}[Invariance: which factor is geometry and which is coordinates]
   \label{rem:angle-invariance}
-  Reparametrize each block separately, $\vartheta_{a} = T_{a}\psi_{a}$ and $\vartheta_{b} = T_{b}\psi_{b}$ with $T_{a}, T_{b}$ invertible. The scores become $T_{a}^{\prime}\dot{\ell}_{a}$ and $T_{b}^{\prime}\dot{\ell}_{b}$, so $\mathbf{F}_{aa} \mapsto T_{a}^{\prime}\mathbf{F}_{aa}T_{a}$, $\mathbf{F}_{ab} \mapsto T_{a}^{\prime}\mathbf{F}_{ab}T_{b}$, and $\mathbf{S}_{a\mid b} \mapsto T_{a}^{\prime}\mathbf{S}_{a\mid b}T_{a}$: every matrix in \eqref{eq:eff-info-block}--\eqref{eq:whitened-cross} changes. The subspaces $S_{a}$ and $S_{b}$, however, do not, so by \Cref{def:principal-angles} the angles $\phi_{k}$ are unchanged and $\mathbf{C}$ is altered only by orthogonal equivalence, $\mathbf{C} \mapsto U\mathbf{C}V^{\prime}$.
+  Reparametrize each block separately, $\vartheta_{a} = T_{a}\eta_{a}$ and $\vartheta_{b} = T_{b}\eta_{b}$ with $T_{a}, T_{b}$ invertible. The scores become $T_{a}^{\prime}\dot{\ell}_{a}$ and $T_{b}^{\prime}\dot{\ell}_{b}$, so $\mathbf{F}_{aa} \mapsto T_{a}^{\prime}\mathbf{F}_{aa}T_{a}$, $\mathbf{F}_{ab} \mapsto T_{a}^{\prime}\mathbf{F}_{ab}T_{b}$, and $\mathbf{S}_{a\mid b} \mapsto T_{a}^{\prime}\mathbf{S}_{a\mid b}T_{a}$: every matrix in \eqref{eq:eff-info-block}--\eqref{eq:whitened-cross} changes. The subspaces $S_{a}$ and $S_{b}$, however, do not, so by \Cref{def:principal-angles} the angles $\phi_{k}$ are unchanged and $\mathbf{C}$ is altered only by orthogonal equivalence, $\mathbf{C} \mapsto U\mathbf{C}V^{\prime}$.
 
-  Equation \eqref{eq:block-penalty-product} therefore separates a coordinate-dependent scale factor $\det \mathbf{F}_{aa}$ from a coordinate-free geometric deficit $\prod_{k}\sin^{2}\phi_{k}$. This is the block form of \Cref{rem:efficient-score}: the penalty is a property of the pair of subspaces, not of the parametrization used to describe them. In fact the $\phi_{k}$ are a \emph{complete} invariant --- two pairs of subspaces are related by an isometry of $\mathcal{H}$ if and only if their principal angles agree --- so nothing about the block coupling is lost by reducing it to these $r$ numbers.
+  Equation \eqref{eq:block-penalty-product} therefore separates a coordinate-dependent scale factor $\det \mathbf{F}_{aa}$ from a coordinate-free geometric deficit $\prod_{k}\sin^{2}\phi_{k}$. This is the block form of \Cref{rem:efficient-score}: the penalty is a property of the pair of subspaces, not of the parametrization used to describe them. In fact the $\phi_{k}$ are a \emph{complete} invariant: given two pairs of subspaces of the same dimensions $(p,q)$ inside inner product spaces of equal dimension, there is an isometry carrying one pair to the other if and only if their principal angles agree \cite{bjorck1973}. Nothing about the block coupling is lost by reducing it to these $\nu$ numbers.
 \end{remark}
 
 \subsubsection{Relation to the determinant identities}
@@ -495,7 +807,7 @@ Each principal angle contributes one geometric penalty term, and small principal
   With the convention of \Cref{def:principal-angles},
   \begin{equation}
     \det \mathbf{F}
-    = \det \mathbf{F}_{aa} \det \mathbf{F}_{bb} \prod_{k=1}^{r}\sin^{2}\phi_{k}
+    = \det \mathbf{F}_{aa} \det \mathbf{F}_{bb} \prod_{k=1}^{\nu}\sin^{2}\phi_{k}
     \le \det \mathbf{F}_{aa}\det \mathbf{F}_{bb} ,
     \label{eq:fischer}
   \end{equation}
@@ -503,170 +815,45 @@ Each principal angle contributes one geometric penalty term, and small principal
 \end{corollary}
 
 \begin{proof}
-  \Crefdefpart{lem:projection}{itm:projection-determinant}, in its block form, gives $\det\mathbf{F} = \det\mathbf{F}_{bb}\det\mathbf{S}_{a\mid b}$; substitute \eqref{eq:block-penalty-product}. The inequality and its equality case follow from $\sin^{2}\phi_{k}\le 1$ with equality throughout iff every $\phi_{k}=\pi/2$.
+  \Crefdefpart{lem:projection}{itm:projection-determinant}, in its block form, gives $\det\mathbf{F} = \det\mathbf{F}_{bb}\det\mathbf{S}_{a\mid b}$; substitute \eqref{eq:block-penalty-product}, whose padded factors $\sin^{2}\phi_{k} = 1$ for $k > \nu$ contribute nothing. The inequality and its equality case follow from $\sin^{2}\phi_{k}\le 1$ with equality throughout iff every $\phi_{k}=\pi/2$. See also \cite[Sec.~7.8]{horn2013}.
 \end{proof}
 
-Identity \eqref{eq:fischer} places the three determinant statements of this paper on a single scale. \Cref{cor:hadamard} bounds the volume by the coordinate energies $\prod_{k} G_{k,k}$; \Cref{cor:fischer} bounds it by the block volumes; the exact factorizations identify the deficit in each case as a product of squared sines. Recursively bisecting into $1\times 1$ blocks turns \eqref{eq:fischer} back into \eqref{eq:hadamard}, so Hadamard is the fully refined instance and Fischer the intermediate one. The refinement is genuinely informative: a system may satisfy Fischer nearly with equality --- the two blocks almost orthogonal --- while being severely ill-conditioned within a block, exactly the situation flagged in \eqref{eq:theta-phi-order}.
+Identity \eqref{eq:fischer} places the three determinant statements of this note on a single scale. \Cref{cor:hadamard} bounds the volume by the coordinate energies $\prod_{k} G_{k,k}$; \Cref{cor:fischer} bounds it by the block volumes; the exact factorizations identify the deficit in each case as a product of squared sines. Recursively bisecting into $1\times 1$ blocks turns \eqref{eq:fischer} back into \eqref{eq:hadamard}, so Hadamard is the fully refined instance and Fischer the intermediate one. The refinement is genuinely informative: a system may satisfy Fischer nearly with equality --- the two blocks almost orthogonal --- while being severely ill-conditioned within a block, exactly the situation flagged in \eqref{eq:theta-phi-order}.
 
 \begin{remark}[Partial correlation is a principal angle, up to sign]
   \label{rem:partial-as-angle}
-  Apply \Cref{def:principal-angles} to the one-dimensional subspaces $S_{a} = \operatorname{span}\{r_{i|-i,-j}\}$ and $S_{b} = \operatorname{span}\{r_{j|-i,-j}\}$ spanned by the residuals of \Cref{prop:partial-corr}. There is a single principal angle $\phi$, and
-  \begin{equation}
-    \cos\phi = \abs{\rho_{i,j|-i,-j}}
-    = \frac{\abs{(G^{-1})_{i,j}}}{\sqrt{(G^{-1})_{i,i}(G^{-1})_{j,j}}} .
-    \label{eq:partial-as-angle}
-  \end{equation}
-  Principal angles are unsigned by construction: the recursion \eqref{eq:principal-angle-def} maximizes an inner product and therefore selects the favorable orientation of each principal vector. This is precisely why the sign flip of \eqref{eq:sign-flip} is invisible at the level of angles --- the two residual pairs there have opposite cosines but identical principal angle. Angles report the magnitude of coupling and nothing else; the signed entries of $G^{-1}$ are still required wherever direction matters, as in the edge weights of a Gaussian graphical model.
+  Apply \Cref{def:principal-angles} to the one-dimensional subspaces spanned by the residuals
+  $r_{i|-i,-j}$ and $r_{j|-i,-j}$ of \Cref{prop:partial-corr}. There is a single principal
+  angle $\phi$, with $\cos\phi = \abs{\rho_{i,j|-i,-j}}$. The absolute value is the point:
+  angles are unsigned (\Cref{rem:angle-consistency}), so the sign flip of
+  \eqref{eq:sign-flip} is invisible at this level --- the two residual pairs there have
+  opposite cosines but identical principal angle. Angles report the magnitude of coupling
+  and nothing else; the signed entries of $G^{-1}$ remain necessary wherever direction
+  matters, as in the edge weights of a Gaussian graphical model \cite{lauritzen1996}.
 \end{remark}
 
 \begin{remark}[Computing the angles stably]
   \label{rem:angle-computation}
-  Continuing \Cref{rem:diagnostics}, principal angles should never be obtained from determinants or from explicit matrix square roots. Compute the Cholesky factors $\mathbf{F}_{aa}=L_{a}L_{a}^{\prime}$ and $\mathbf{F}_{bb}=L_{b}L_{b}^{\prime}$, form $\mathbf{C} = L_{a}^{-1}\mathbf{F}_{ab}L_{b}^{-\prime}$ by triangular solves, and take its SVD; then $\cos\phi_{k}=\sigma_{k}$. This is the Bj\"orck--Golub construction and is accurate for angles near $\pi/2$.
+  Continuing \Cref{rem:diagnostics}, principal angles should never be obtained from determinants or from explicit matrix square roots. Compute the Cholesky factors $\mathbf{F}_{aa}=L_{a}L_{a}^{\prime}$ and $\mathbf{F}_{bb}=L_{b}L_{b}^{\prime}$, form $\mathbf{C} = L_{a}^{-1}\mathbf{F}_{ab}L_{b}^{-\prime}$ by triangular solves --- legitimate by \Cref{rem:whitening-choice} --- and take its SVD; then $\cos\phi_{k}=\sigma_{k}$. This is the Bj\"orck--Golub construction \cite{bjorck1973} and is accurate for angles near $\pi/2$.
 
-  Small angles --- the diagnostically important regime --- are the ill-conditioned case for this route, since $\sigma_{k} = 1 - \phi_{k}^{2}/2 + O(\phi_{k}^{4})$ loses roughly half the available digits, and forming $I - \mathbf{C}\mathbf{C}^{\prime}$ by subtraction compounds the cancellation. Obtain $\sin\phi_{k}$ instead without subtraction: an $\mathrm{LDL}^{\prime}$ factorization of $\mathbf{F}$ with the nuisance block ordered first yields $\mathbf{S}_{a\mid b}$ directly as the trailing block, and
+  Small angles --- the diagnostically important regime --- are the ill-conditioned case for this route, since $\sigma_{k} = 1 - \phi_{k}^{2}/2 + O(\phi_{k}^{4})$ loses roughly half the available digits, and forming $I - \mathbf{C}\mathbf{C}^{\prime}$ by subtraction compounds the cancellation \cite{knyazev2002}. Obtain $\sin\phi_{k}$ instead without subtraction: an $\mathrm{LDL}^{\prime}$ factorization of $\mathbf{F}$ with the nuisance block ordered first yields $\mathbf{S}_{a\mid b}$ directly as the trailing block, and
   \begin{equation}
     \sin^{2}\phi_{k}
-    = \lambda_{k}\bigl(L_{a}^{-1}\mathbf{S}_{a\mid b}L_{a}^{-\prime}\bigr)
+    = \lambda_{k}\bigl(L_{a}^{-1}\mathbf{S}_{a\mid b}L_{a}^{-\prime}\bigr) .
     \label{eq:sine-form}
   \end{equation}
-  is then a similarity-transformed eigenproblem on a positive definite matrix. If only the aggregate penalty \eqref{eq:block-penalty-product} is wanted, the log-determinants suffice: $\sum_{k}\log\sin^{2}\phi_{k} = \log\det\mathbf{F} - \log\det\mathbf{F}_{aa} - \log\det\mathbf{F}_{bb}$, each term read off a Cholesky diagonal.
+  To see \eqref{eq:sine-form}, substitute \eqref{eq:eff-info-factor} and set
+  $M \coloneq L_{a}^{-1}\mathbf{F}_{aa}^{1/2}$; then $MM^{\prime} = L_{a}^{-1}\mathbf{F}_{aa}L_{a}^{-\prime} = I$,
+  so $M$ is orthogonal and
+  $L_{a}^{-1}\mathbf{S}_{a\mid b}L_{a}^{-\prime} = M(I - \mathbf{C}\mathbf{C}^{\prime})M^{\prime}$
+  is orthogonally similar to $I - \mathbf{C}\mathbf{C}^{\prime}$, hence has the same
+  eigenvalues. If only the aggregate penalty \eqref{eq:block-penalty-product} is wanted, the log-determinants suffice: $\sum_{k}\log\sin^{2}\phi_{k} = \log\det\mathbf{F} - \log\det\mathbf{F}_{aa} - \log\det\mathbf{F}_{bb}$, each term read off a Cholesky diagonal.
 \end{remark}
 
 \begin{example}[Closely spaced sources]
   \label{ex:principal-angles-superresolution}
-  Continuing the superresolution comment of \Cref{ex:linear-gaussian}, let $\vartheta_{a}$ collect the parameters of one source cluster and $\vartheta_{b}$ those of another. The score subspaces are spanned by the derivatives of the array manifold at the two parameter values, and $\phi_{1}$ measures how nearly some combination of the first cluster's responses is reproduced by the second. As the separation shrinks, $\phi_{1}\to 0$ and \Cref{prop:block-vif} shows the worst-case bound diverging as $\csc^{2}\phi_{1}$ regardless of signal-to-noise ratio, while the leading principal vectors name the specific parameter combination that is failing --- information that neither $\det\mathbf{F}$ nor the individual $\theta_{i}$ supplies.
+  Continuing \Cref{rem:regularization}, let $\vartheta_{a}$ collect the parameters of one source cluster and $\vartheta_{b}$ those of another. The score subspaces are spanned by the derivatives of the array manifold at the two parameter values, and $\phi_{1}$ measures how nearly some combination of the first cluster's responses is reproduced by the second. As the separation shrinks, $\phi_{1}\to 0$ and \Cref{prop:block-vif} shows the worst-case bound diverging as $\csc^{2}\phi_{1}$ regardless of signal-to-noise ratio, while the leading principal vectors name the specific parameter combination that is failing --- information that neither $\det\mathbf{F}$ nor the individual $\theta_{i}$ supplies \cite{stoica1989}.
 \end{example}
-
-\subsection{Canonical correlations and block dependence}\label{subsec:canonical-gaussian}
-
-The block geometry of \Cref{subsec:principal-angles-block} transfers verbatim to the Gaussian setting, where it acquires its classical name. Partition $X = (X_{a}, X_{b})$ with $X_{a}\in\mathbb{R}^{p}$, $X_{b}\in\mathbb{R}^{q}$, and $\Sigma$ blocked conformably. Since $\Sigma$ is the Gram matrix of the coordinates under the covariance inner product, \Cref{lem:whitened-angles} applies with $\mathbf{F}$ replaced by $\Sigma$: the singular values $\rho_{k}=\cos\phi_{k}$ of
-\begin{equation}
-  \mathbf{C} = \Sigma_{aa}^{-1/2}\Sigma_{ab}\Sigma_{bb}^{-1/2}
-  \label{eq:canonical-cross}
-\end{equation}
-are the \emph{canonical correlations} of Hotelling, and the principal vectors are the canonical variates. The scalar case $p=q=1$ returns the ordinary correlation $\rho_{i,j}$.
-
-Three consequences restate earlier results at block level.
-
-\emph{Conditional covariance.} By \eqref{eq:eff-info-factor}, $\Sigma_{a\mid b} = \Sigma_{aa}^{1/2}(I-\mathbf{C}\mathbf{C}^{\prime})\Sigma_{aa}^{1/2}$, so the generalized-variance ratio is
-\begin{equation}
-  \frac{\det\Sigma_{a\mid b}}{\det\Sigma_{aa}}
-  = \prod_{k=1}^{r}(1-\rho_{k}^{2})
-  = \prod_{k=1}^{r}\sin^{2}\phi_{k} ,
-  \label{eq:wilks}
-\end{equation}
-which is Wilks' $\Lambda$. This is the block form of \Cref{cor:precision-diag}, and for $p=1$ it reduces to $\var(X_{i}\mid X_{-i}) = \var(X_{i})\sin^{2}\theta_{i}$.
-
-\emph{Mutual information.} Combining \Cref{cor:fischer} with the Gaussian entropy formula,
-\begin{equation}
-  I(X_{a}; X_{b})
-  = \frac{1}{2}\log\frac{\det\Sigma_{aa}\det\Sigma_{bb}}{\det\Sigma}
-  = -\sum_{k=1}^{r}\log\sin\phi_{k} .
-  \label{eq:mutual-info-angles}
-\end{equation}
-Each canonical pair contributes an independent term $-\log\sin\phi_{k}$, and the contribution diverges as that angle closes. Read in this direction, Fischer's inequality \eqref{eq:fischer} is exactly the statement $I \ge 0$, with equality --- independence --- if and only if every principal angle is right. This is the block counterpart of the reading of Hadamard's inequality given at the end of this section: Hadamard says joint entropy is maximized by mutual independence of coordinates, Fischer says the same for independence of the two blocks, and $\prod_{k}\sin^{2}\phi_{k}$ measures the shortfall.
-
-\emph{Conditional independence of blocks.} Let $\Theta = \Sigma^{-1}$ and consider the residual subspaces obtained by projecting out $X_{k}$, $k \notin \{a,b\}$. Their cross-Gram structure is that of the conditional covariance $H$ of $(X_{a},X_{b})$ given the rest, and by block inversion $H = \bigl(\Theta_{[ab],[ab]}\bigr)^{-1}$. Canonical correlations are invariant under this inversion: whitening so that $H$ has identity diagonal blocks and $\Sigma$-cross block $R = \operatorname{diag}(\rho_{k})$, the inverse has blocks $(I-R^{2})^{-1}$ on the diagonal and $-R(I-R^{2})^{-1}$ off it, whose whitening returns $-R$. Hence the \emph{partial} canonical correlations are the singular values of
-\begin{equation}
-  \Theta_{aa}^{-1/2}\Theta_{ab}\Theta_{bb}^{-1/2} ,
-  \label{eq:partial-canonical}
-\end{equation}
-and the sign reversal seen there in the scalar case is the same one recorded in \eqref{eq:sign-flip}. In particular $\Theta_{ab}=0$ if and only if all partial principal angles equal $\pi/2$, if and only if $X_{a} \perp\!\!\!\perp X_{b}$ given the remaining variables --- the block generalization of \Cref{cor:precision-offdiag}, and the basis for block-structured penalties in graphical model selection.
-
-\subsection{The Cram\'er--Rao lower bound}
-
-We now translate this geometry into statistical estimation and quantify how correlated nuisance parameters limit attainable accuracy.
-
-For a parametric model with density $p(x;\vartheta)$, the likelihood function is
-\begin{equation}
-  L(\vartheta; x) \coloneq p(x;\vartheta),
-\end{equation}
-and the corresponding log-likelihood is
-\begin{equation}
-  \ell(\vartheta; x) \coloneq \log L(\vartheta; x) = \log p(x;\vartheta).
-\end{equation}
-The score function with respect to the $i$-th parameter is then
-\begin{equation}
-  \dot{\ell}_{i}(x;\vartheta) \coloneq \partial_{i} \log p(x;\vartheta),
-\end{equation}
-which measures how sensitive the log-likelihood is to a small change in $\vartheta_i$. The collection of score functions forms a family of random variables in $L^{2}(p)$, and their covariance structure is precisely the Fisher information matrix.
-
-\begin{definition}[Cram\'er--Rao lower bound]
-  Let $\vartheta \in \mathbb{R}^{n}$ parameterize a statistical model with Fisher information matrix $\mathbf{F}(\vartheta)$. For any unbiased estimator $\hat{\vartheta}$ of $\vartheta$, the covariance matrix satisfies
-  \begin{equation*}
-    \cov(\hat{\vartheta}) \succeq \mathbf{F}(\vartheta)^{-1}
-  \end{equation*}
-  In particular, the variance of each component obeys
-  \begin{equation*}
-    \var(\hat{\vartheta}_{i}) \ge (\mathbf{F}^{-1})_{i,i}
-  \end{equation*}
-  and the right-hand side is called the Cram\'er--Rao lower bound (CRLB) for $\vartheta_{i}$.
-\end{definition}
-
-\begin{corollary}[Nuisance penalty in the Cram\'er--Rao lower bound]
-  \label{cor:crb}
-  Let $\mathbf{F}$ be the Fisher information matrix for a parameter vector $\vartheta \in \mathbb{R}^{n}$. By definition, $\mathbf{F}_{i,j} = \E\bigl[\partial_{i} \log p \partial_{j} \log p\bigr]$ is the Gram matrix of the score functions $\dot{\ell}_{i} \coloneq \partial_{i} \log p$ in the Hilbert space $L^{2}(p)$ under the inner product $\inner{a, b} \coloneq \E[ab]$. Then the minimum variance of an unbiased estimator is bounded by:
-  \begin{equation}\label{eq:crb-angle}
-    \begin{aligned}
-      \operatorname{CRLB}(\vartheta_{i})
-      &= (\mathbf{F}^{-1})_{i,i}
-      = \frac{M_{i,i}}{\det \mathbf{F}} \\
-      &= \underbrace{\frac{1}{\mathbf{F}_{i,i}}}_{\substack{\text{single-parameter}\\\text{bound}}}
-      \cdot
-      \underbrace{\frac{1}{\sin^{2}\theta_{i}}}_{\substack{\text{nuisance}\\\text{penalty}}}
-      = \frac{1}{\mathbf{F}_{i,i}(1 - R_{i}^{2})}
-    \end{aligned}
-  \end{equation}
-  Here, $\theta_{i}$ is the angle in $L^{2}(p)$ between the $i$-th score and the span of the nuisance scores. The penalty equals unity if and only if the $i$-th score is orthogonal to all others (parameter orthogonality). It diverges as $\csc^{2}\theta_{i}$ in the ill-conditioned regime where $\det \mathbf{F} \to 0$ while $M_{i,i}$ is bounded away from zero.
-\end{corollary}
-
-\begin{proof}
-  Under usual regularity conditions (e.g., the density $p_\vartheta > 0$, ability to swap differentiation and integration), the score functions lie in $L^{2}(p)$ with a mean of zero, $\E[\dot{\ell}_{i}] = 0$. Consequently, $\mathbf{F}$ serves simultaneously as their covariance matrix and their geometric Gram matrix. The result follows directly by substituting $v_{i} = \dot{\ell}_{i}$ into \Cref{prop:minor-angle} and utilizing the multiple correlation equivalence.
-\end{proof}
-
-\begin{remark}[Efficient score]
-  \label{rem:efficient-score}
-  Let $\dot{\ell}_{i}^{*} \coloneq \dot{\ell}_{i} - P_{S_{i}}\dot{\ell}_{i}$ be the residual of the $i$-th score after orthogonally projecting out the nuisance scores. This is known in semiparametric theory as the \emph{efficient score} for the parameter component $\vartheta_{i}$. By \Cref{prop:minor-angle}:
-  \begin{equation}
-    \operatorname{CRLB}(\vartheta_{i})
-    = \frac{1}{\norm{\dot{\ell}_{i}^{*}}^{2}}
-    = \frac{1}{\E\bigl[(\dot{\ell}_{i}^{*})^{2}\bigr]}
-    \label{eq:efficient-score}
-  \end{equation}
-  This highlights a key statistical point: the achievable accuracy of estimating $\vartheta_{i}$ is determined not by the total sensitivity of the likelihood to $\vartheta_{i}$, but \emph{only} by the part of that sensitivity that nuisance parameters cannot mimic. It also shows that the penalty is a property of the \emph{subspace} $S_{i}$, not of a particular parametrization of the nuisance block. Any reparametrization that keeps $\vartheta_{i}$ fixed while re-coordinatizing nuisance variables leaves $S_{i}$---and therefore $\vartheta_{i}$ and the optimal bound---unchanged.
-\end{remark}
-
-\begin{example}[Linear Gaussian model / collinearity]
-  \label{ex:linear-gaussian}
-  Let $y = A\vartheta + \varepsilon$ with $\varepsilon \sim \mathcal{N}(0, \sigma^{2} I)$ and $A =
-  \begin{bmatrix}
-    a_{1},& \ldots,& a_{n}
-  \end{bmatrix}$ having full column rank. Then the log-likelihood is $\log p = -\norm{y - A\vartheta}^{2}/(2\sigma^{2}) + \mathrm{const}$. The score functions take the form $\dot{\ell}_{i} = a_{i}^{\prime} (y - A\vartheta)/\sigma^{2}$, leading to:
-  \begin{equation*}
-    \mathbf{F}_{i,j}
-    = \frac{a_{i}^{\prime} \E\bigl[(y-A\vartheta)(y-A\vartheta)^{\prime}\bigr] a_{j}}
-    {\sigma^{4}}
-    = \frac{a_{i}^{\prime} a_{j}}{\sigma^{2}}
-  \end{equation*}
-  Thus, the Fisher information matrix is the regressor Gram matrix $A^{\prime} A$ scaled by the noise variance. In this context, the parameter component $\vartheta_{i}$ is associated with the geometric angle in $\mathbb{R}^{m}$ between the column vector $a_{i}$ and the span of the remaining columns. Consequently:
-  \begin{equation} \label{eq:vif}
-    \operatorname{CRLB}(\vartheta_{i})
-    = \frac{\sigma^{2}}{\norm{a_{i}}^{2} \sin^{2}\theta_{i}}
-    = \frac{\sigma^{2}}{\norm{a_{i}}^{2}}\cdot\frac{1}{1 - R_{i}^{2}}
-  \end{equation}
-  Collinearity appears as a small angle. The regressor energy $\norm{a_{i}}^{2}$ (representing the signal strength of that variable) may be large, but if the vector lies too close to the hyperplane spanned by the other variables, the parameter estimate remains unreliable.
-
-  \emph{Note on Regularization:} This geometric collapse is exactly why techniques like Ridge regression (Tikhonov regularization) add a penalty term $\lambda I$ to the Gram matrix. Geometrically, this artificially inflates the lengths and angles, bounding the variance at the cost of introducing bias. The exact same geometry governs closely spaced components in superresolution problems (like separating two closely spaced point sources in optics), where $\sin\theta_{i} \to 0$ as separation shrinks, causing the theoretical error bounds to blow up even at fixed signal-to-noise ratios.
-\end{example}
-
-\begin{remark}[Diagnostics and computational stability]
-  \label{rem:diagnostics}
-  The Cram\'er--Rao formulation clearly shows that the determinant $\det\mathbf{F}$ alone---which is maximized in the D-optimality design criterion---cannot successfully pinpoint \emph{which} parameter is poorly determined. By \Cref{cor:hadamard}, the determinant aggregates the sequential angles into a single overall volume metric. A small parallelotope volume communicates that the system is ill-conditioned, but says nothing about which coordinate is failing.
-
-  The true diagnostic quantity is the ratio $M_{i,i}/\det\mathbf{F}$, not either factor in isolation. Numerically, however, calculating explicit determinants and minors is disastrous due to floating-point underflow/overflow and $O(n!)$ naive complexity.
-
-  Instead, computationally stable diagnostics compute the Cholesky factorization $\mathbf{F} = LL^{\prime}$ in $O(n^{3})$ operations. One can then obtain the inverse diagonal entries $(\mathbf{F}^{-1})_{i,i} = \norm{L^{-1}e_{i}}^{2}$ via standard forward/backward triangular solves, and finally read off the geometric angles using $\sin^{2}\theta_{i} = 1/(\mathbf{F}_{i,i}(\mathbf{F}^{-1})_{i,i})$.
-\end{remark}
 
 \section{Application to Gaussian random vectors}
 \label{sec:gaussian-vectors}
@@ -675,29 +862,48 @@ The projection-and-Gram framework has a natural application to multivariate norm
 
 \subsection{The geometry of conditional expectation}
 
-Let $X =
-\begin{bmatrix}
-  X_{1}, \ldots, X_{n}
-\end{bmatrix}^{\prime}$ be a random vector drawn from a multivariate normal distribution $\mathcal{N}(\mu, \Sigma)$, where we assume the covariance matrix $\Sigma \succ 0$ is strictly positive definite. Without loss of generality, we assume $\mu = 0$, as shifting the mean does not affect variances or covariances.
+Let $X = [\,X_{1}, \ldots, X_{n}\,]^{\prime}$ be a random vector drawn from a multivariate normal distribution $\mathcal{N}(\mu, \Sigma)$, where we assume the covariance matrix $\Sigma \succ 0$ is strictly positive definite. Without loss of generality, we assume $\mu = 0$, as shifting the mean does not affect variances or covariances.
 
 Consider the Hilbert space $L^{2}(P)$ of zero-mean, finite-variance random variables, equipped with the covariance inner product:
 \begin{equation}
   \inner{U, V} \coloneq \E[U V] = \cov(U, V)
+  \label{eq:cov-inner-product}
 \end{equation}
-Under this geometry, the covariance matrix $\Sigma$ is exactly the Gram matrix $G$ of the variables $X_{1}, \ldots, X_{n}$. The squared norm of a variable is its variance, $\norm{X_{i}}^{2} = \var(X_{i}) = \Sigma_{i,i}$, and the cosine of the angle between two variables is exactly their Pearson correlation coefficient:
-\begin{equation}
+This is the same construction used for score functions in \Cref{subsec:crlb}, with the model
+distribution in place of $P_{\vartheta}$. Under this geometry, the covariance matrix $\Sigma$
+is exactly the Gram matrix $G$ of the variables $X_{1}, \ldots, X_{n}$. The squared norm of a
+variable is its variance, $\norm{X_{i}}^{2} = \var(X_{i}) = \Sigma_{i,i}$, and the cosine of
+the angle between two variables is exactly their Pearson correlation coefficient:
+\begin{equation*}
   \cos \angle(X_{i}, X_{j})
   = \frac{\inner{X_{i}, X_{j}}}{\norm{X_{i}} \norm{X_{j}}}
   = \frac{\cov(X_{i}, X_{j})}{\sqrt{\var(X_{i})\var(X_{j})}}
   = \rho_{i,j}
-\end{equation}
+\end{equation*}
 For Gaussian random vectors, a remarkable property holds: orthogonal projection of a variable onto a subspace generated by other variables is equivalent to its \emph{conditional expectation}.
 
-If $S_{-i} \coloneq \operatorname{span}\{X_{k}\}_{k \neq i}$ is the subspace spanned by all other variables (denoted collectively as $X_{- i}$), the projection is:
-\begin{equation}
+If $S_{-i} \coloneq \operatorname{span}\{X_{k}\}_{k \neq i}$ is the subspace spanned by all other variables (denoted collectively as $X_{- i}$), the projection is
+\begin{equation*}
   P_{S_{-i}} X_{i} = \E[X_{i} | X_{- i}]
-\end{equation}
+\end{equation*}
 Because the projection is linear, the conditional expectation of a Gaussian is always a linear combination of the conditioning variables.
+
+The same statement holds blockwise, and is needed in \Cref{subsec:canonical-gaussian}.
+Partition $X = (X_{a}, X_{b})$ and apply \Crefdefpart{lem:projection}{itm:projection} to each
+entry of $X_{a}$ with $S = \operatorname{span}\{X_{b,1},\ldots,X_{b,q}\}$: the coefficient
+matrix is $\Sigma_{ab}\Sigma_{bb}^{-1}$, so
+$\E[X_{a}\mid X_{b}] = \Sigma_{ab}\Sigma_{bb}^{-1}X_{b}$, and the Gram matrix of the residual
+vector $X_{a} - \E[X_{a}\mid X_{b}]$ is, by
+\Crefdefpart{lem:projection}{itm:projection-squared-norm} applied entrywise,
+\begin{equation}
+  \Sigma_{a \mid b}
+  \coloneq \cov(X_{a}\mid X_{b})
+  = \Sigma_{aa} - \Sigma_{ab}\Sigma_{bb}^{-1}\Sigma_{ba} .
+  \label{eq:gaussian-conditional-cov}
+\end{equation}
+For jointly Gaussian vectors this residual is independent of $X_{b}$, so
+\eqref{eq:gaussian-conditional-cov} is the conditional covariance and not merely the
+covariance of a linear prediction error \cite[Ch.~2]{anderson2003}.
 
 \subsection{The precision matrix and conditional variance}
 
@@ -706,67 +912,122 @@ Let $\Theta \coloneq \Sigma^{-1}$ be the inverse covariance matrix, also called 
 \begin{corollary}[Diagonal of the precision matrix]
   \label{cor:precision-diag}
   The squared distance from $X_{i}$ to the subspace $S_{-i}$ represents the variance of the residual error, which is exactly the conditional variance of $X_{i}$ given all other variables:
-  \begin{equation}
+  \begin{equation*}
     \dist^{2}(X_{i}, S_{-i})
     = \E\bigl[(X_{i} - \E[X_{i} | X_{- i}])^{2}\bigr]
     = \var(X_{i} | X_{- i})
-  \end{equation}
+  \end{equation*}
   Following \Cref{prop:minor-angle}, the diagonal entries of the precision matrix isolate this conditional variance:
   \begin{equation}
     \Theta_{i,i} = (\Sigma^{-1})_{i,i} = \frac{1}{\var(X_{i} | X_{- i})}
+    \label{eq:precision-diag}
   \end{equation}
 \end{corollary}
 
-Using the angular formulation from \Cref{prop:minor-angle}, we can also express this as:
+Using the angular formulation from \Cref{prop:minor-angle}, we can also express this as
 \begin{equation}
   \var(X_{i} | X_{- i})
   = \var(X_{i}) \sin^{2}\theta_{i}
   = \var(X_{i}) (1 - R_{i}^{2})
+  \label{eq:conditional-variance-angle}
 \end{equation}
-where $R_{i}^{2}$ is the proportion of variance of $X_{i}$ explained by all other variables. If $X_{i}$ is highly correlated with the rest of the network ($\sin\theta_{i} \to 0$), the conditional variance shrinks toward zero, and the precision $\Theta_{i,i}$ blows up to infinity.
+where $R_{i}^{2}$ is the proportion of variance of $X_{i}$ explained by all other variables. If $X_{i}$ is highly correlated with the rest of the network ($\sin\theta_{i} \to 0$), the conditional variance shrinks toward zero and the precision $\Theta_{i,i}$ diverges.
 
 \subsection{Partial correlation and Gaussian graphical models}
 
-We now apply \Cref{prop:partial-corr} to interpret the off-diagonal entries of the precision matrix. Let $r_{i|-i,-j}$ and $r_{j|-i,-j}$ be the residuals of $X_{i}$ and $X_{j}$ after projecting out the control subspace $S_{-i,-j} \coloneq \operatorname{span} \{X_{k}\}_{k \neq i,j}$. In probability terms, these are the prediction errors:
-\begin{equation}
+We now apply \Cref{prop:partial-corr} to interpret the off-diagonal entries of the precision matrix. Let $r_{i|-i,-j}$ and $r_{j|-i,-j}$ be the residuals of $X_{i}$ and $X_{j}$ after projecting out the control subspace $S_{-i,-j} \coloneq \operatorname{span} \{X_{k}\}_{k \neq i,j}$. In probability terms, these are the prediction errors
+\begin{equation*}
   \begin{aligned}
     r_{i|-i,-j} &= X_{i} - \E[X_{i} | X_{- i,-j}] \\
     r_{j|-i,-j} &= X_{j} - \E[X_{j} | X_{- i,-j}]
   \end{aligned}
-\end{equation}
+\end{equation*}
 The correlation between these residuals is the \emph{partial correlation}, denoted $\rho_{i,j |\mathrm{rest}}$. It measures the linear dependence between $X_{i}$ and $X_{j}$ that cannot be explained by the other variables.
 
 \begin{corollary}[Off-diagonal precision and partial correlation]
   \label{cor:precision-offdiag}
   The partial correlation between $X_{i}$ and $X_{j}$ given all other variables is given by the scaled off-diagonal entries of the precision matrix:
-  \begin{equation}
+  \begin{equation*}
     \rho_{i,j | \mathrm{rest}}
     = \frac{-\Theta_{i,j}}{\sqrt{\Theta_{i,i} \Theta_{j,j}}}
-  \end{equation}
+  \end{equation*}
 \end{corollary}
 
-This equation underpins Gaussian graphical models (GGMs): for jointly Gaussian variables, zero correlation implies statistical independence. Therefore, if the partial correlation is zero, the residuals are independent, meaning $X_{i}$ and $X_{j}$ are \emph{conditionally independent} given the rest of the network:
+This equation underpins Gaussian graphical models (GGMs) \cite{lauritzen1996}: for jointly Gaussian variables, zero correlation implies statistical independence. Therefore, if the partial correlation is zero, the residuals are independent, meaning $X_{i}$ and $X_{j}$ are \emph{conditionally independent} given the rest of the network:
 \begin{equation}
   \Theta_{i,j} = 0 \iff X_{i} \perp\!\!\!\perp X_{j} | X_{- i,-j}
+  \label{eq:ggm}
 \end{equation}
 Geometrically, $\Theta_{i,j} = 0$ means that after projecting out the shared environment $S_{-i,-j}$, the remaining variations of $X_{i}$ and $X_{j}$ are orthogonal.
 
-\subsection{Information geometry and entropy}
+\subsection{Canonical correlations and block dependence}\label{subsec:canonical-gaussian}
 
-Finally, \Cref{cor:hadamard} can be interpreted in information-theoretic terms. The differential entropy of an $n$-dimensional Gaussian vector is:
+The block geometry of \Cref{subsec:principal-angles-block} transfers verbatim to the Gaussian setting, where it acquires its classical name. Partition $X = (X_{a}, X_{b})$ with $X_{a}\in\mathbb{R}^{p}$, $X_{b}\in\mathbb{R}^{q}$, and $\Sigma$ blocked conformably. Since $\Sigma$ is the Gram matrix of the coordinates under \eqref{eq:cov-inner-product}, \Cref{lem:whitened-angles} applies with $\Gamma = \Sigma$: the singular values $\rho_{k}=\cos\phi_{k}$ of
 \begin{equation}
+  \mathbf{C} = \Sigma_{aa}^{-1/2}\Sigma_{ab}\Sigma_{bb}^{-1/2}
+  \label{eq:canonical-cross}
+\end{equation}
+are the \emph{canonical correlations} of Hotelling \cite{hotelling1936}, and the principal vectors are the canonical variates. The scalar case $p=q=1$ returns the ordinary correlation $\rho_{i,j}$.
+
+Three consequences restate earlier results at block level.
+
+\emph{Conditional covariance.} Combining \eqref{eq:gaussian-conditional-cov} with \eqref{eq:eff-info-factor}, $\Sigma_{a\mid b} = \Sigma_{aa}^{1/2}(I-\mathbf{C}\mathbf{C}^{\prime})\Sigma_{aa}^{1/2}$, so the generalized-variance ratio is
+\begin{equation}
+  \frac{\det\Sigma_{a\mid b}}{\det\Sigma_{aa}}
+  = \prod_{k=1}^{\nu}(1-\rho_{k}^{2})
+  = \prod_{k=1}^{\nu}\sin^{2}\phi_{k} ,
+  \label{eq:wilks}
+\end{equation}
+which is Wilks' $\Lambda$ \cite{wilks1932}; this agrees with \eqref{eq:block-penalty-product} because the padded angles contribute unit factors. It is the block form of \Cref{cor:precision-diag}, and for $p=1$ it reduces to \eqref{eq:conditional-variance-angle}.
+
+\emph{Mutual information.} Combining \Cref{cor:fischer} with the Gaussian entropy formula \cite[Ch.~8]{cover2006},
+\begin{equation}
+  I(X_{a}; X_{b})
+  = \frac{1}{2}\log\frac{\det\Sigma_{aa}\det\Sigma_{bb}}{\det\Sigma}
+  = -\sum_{k=1}^{\nu}\log\sin\phi_{k} .
+  \label{eq:mutual-info-angles}
+\end{equation}
+Each canonical pair contributes an independent term $-\log\sin\phi_{k}$, and the contribution diverges as that angle closes. Read in this direction, Fischer's inequality \eqref{eq:fischer} is exactly the statement $I \ge 0$, with equality --- independence --- if and only if every principal angle is right. This is the block counterpart of the reading of Hadamard's inequality given in \Cref{subsec:entropy}: Hadamard says joint entropy is maximized by mutual independence of coordinates, Fischer says the same for independence of the two blocks, and $\prod_{k}\sin^{2}\phi_{k}$ measures the shortfall.
+
+\emph{Conditional independence of blocks.} Let $\Theta = \Sigma^{-1}$ and consider the residual subspaces obtained by projecting out $X_{k}$, $k \notin \{a,b\}$. Their cross-Gram structure is that of the conditional covariance $H$ of $(X_{a},X_{b})$ given the rest, and by block inversion \eqref{eq:block-inverse}, $H = \bigl(\Theta_{[ab],[ab]}\bigr)^{-1}$. Canonical correlations are invariant under this inversion: whitening so that $H$ has identity diagonal blocks and cross block $R = \operatorname{diag}(\rho_{k})$, the inverse has blocks $(I-R^{2})^{-1}$ on the diagonal and $-R(I-R^{2})^{-1}$ off it, whose whitening returns $-R$. Hence the \emph{partial} canonical correlations are the singular values of
+\begin{equation}
+  \Theta_{aa}^{-1/2}\Theta_{ab}\Theta_{bb}^{-1/2} ,
+  \label{eq:partial-canonical}
+\end{equation}
+and the sign reversal seen there is the block form of the one recorded in \eqref{eq:sign-flip}. In particular $\Theta_{ab}=0$ if and only if all partial principal angles equal $\pi/2$, if and only if $X_{a} \perp\!\!\!\perp X_{b}$ given the remaining variables --- the block generalization of \eqref{eq:ggm}, and the basis for block-structured penalties in graphical model selection.
+
+\subsection{Information geometry and entropy}\label{subsec:entropy}
+
+Finally, \Cref{cor:hadamard} can be interpreted in information-theoretic terms. The differential entropy of an $n$-dimensional Gaussian vector is
+\begin{equation*}
   h(X)
   = \frac{1}{2} \log\det(2\pi e \Sigma)
   = \frac{n}{2} \log(2\pi e) + \frac{1}{2} \log\det\Sigma
-\end{equation}
-Because $\det \Sigma$ factors sequentially into the squared distances (conditional variances), we have:
-\begin{equation}
+\end{equation*}
+Because $\det \Sigma$ factors sequentially into the squared distances (conditional variances), we have
+\begin{equation*}
   \det \Sigma = \prod_{k=1}^{n} \var(X_{k} | X_{1}, \ldots, X_{k-1})
-\end{equation}
+\end{equation*}
 Taking the logarithm transforms this geometric volume factorization directly into the chain rule of conditional entropy:
-\begin{equation}
+\begin{equation*}
   h(X_{1}, \ldots, X_{n}) = \sum_{k=1}^{n} h(X_{k} | X_{1}, \ldots, X_{k-1})
-\end{equation}
-Hadamard's inequality ($\det \Sigma \le \prod_{k=1}^{n} \Sigma_{k,k}$) geometrically states that the volume of a parallelotope is maximized when its sides are orthogonal. Information-theoretically, this is the well-known theorem that for a given set of marginal variances, the joint entropy is maximized when the variables are completely independent.
+\end{equation*}
+Hadamard's inequality ($\det \Sigma \le \prod_{k=1}^{n} \Sigma_{k,k}$) geometrically states that the volume of a parallelotope is maximized when its sides are orthogonal. Information-theoretically, this is the maximum-entropy property of the independent Gaussian: for a given set of marginal variances, the joint entropy is maximized when the variables are mutually independent \cite[Ch.~8]{cover2006}.
+
+\section{Conclusion}
+\label{sec:conclusion}
+
+Three threads run through this note, and it is worth separating them explicitly.
+
+\emph{One derivation chain.} \Cref{lem:projection} is the only substantive computation. Every subsequent identity is obtained by choosing what to border: a single coordinate against its predecessors gives Hadamard \eqref{eq:hadamard}; a single coordinate against all others gives the minor ratio \eqref{eq:minor-angle}, hence the VIF, the CRLB nuisance penalty \eqref{eq:crb-angle}, and the diagonal of a Gaussian precision matrix \eqref{eq:precision-diag}; two coordinates against the remaining $n-2$ give partial correlation \eqref{eq:partial-corr} and the off-diagonal precision entries; and an entire block against its complement gives the principal-angle factorization \eqref{eq:block-penalty-product}, hence Fischer \eqref{eq:fischer}, Wilks' $\Lambda$ \eqref{eq:wilks}, and the Gaussian mutual information \eqref{eq:mutual-info-angles}.
+
+\emph{What survives reparametrization.} The principal angles $\phi_{k}$, and the scalar angles $\theta_{i}$ under block-diagonal reparametrizations that fix the coordinate in question, are properties of subspaces and are therefore coordinate-free; they are moreover a complete invariant of the pair of subspaces (\Cref{rem:angle-invariance}). The scale factors $\det\mathbf{F}_{aa}$, $\mathbf{F}_{i,i}$, and $\norm{a_{i}}^{2}$ are not: they change under any rescaling of the parameters, which is why a bare determinant or a bare diagonal information entry is not a diagnostic. Each factorization in this note has been written so that the two kinds of factor appear separately.
+
+\emph{What to compute.} No diagnostic here should be evaluated from its definitional formula. Cholesky factorization and triangular solves give $(\mathbf{F}^{-1})_{i,i}$ and hence $\theta_{i}$ (\Cref{rem:diagnostics}); the Bj\"orck--Golub SVD gives the principal angles near $\pi/2$, and the subtraction-free form \eqref{eq:sine-form} gives them in the small-angle regime where the SVD route loses half its digits (\Cref{rem:angle-computation}).
+
+The framework is limited to second-order local geometry: the Fisher information is a Gram matrix precisely because it acts as an inner product on a single, fixed tangent space $T_{\vartheta}\mathcal{M}$. Bounds that are not of this type---Barankin-style bounds, or effects driven by the global curvature of the Fisher--Rao metric and the differential connections across tangent spaces \cite{amari2000} --- are not captured by a single Gram matrix, and the extent to which the angle picture survives in those settings is not addressed here.
+
+\bibliographystyle{IEEEtran}
+\bibliography{references}
 
 \end{document}

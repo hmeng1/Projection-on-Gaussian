@@ -14,8 +14,8 @@
       }
     },
     {
-      "name": "biber",
-      "command": "C:\\texlive\\2026\\bin\\windows\\biber.exe",
+      "name": "bibtex",
+      "command": "C:\\texlive\\2026\\bin\\windows\\bibtex.exe",
       "args": [
         "%DOCFILE%"
       ],
@@ -47,21 +47,23 @@
   ],
   "latex-workshop.latex.recipes": [
     {
-      "name": "epstopdf-all->pdflatex -> biber -> makeglossaries -> pdflatex*2",
+      "name": "epstopdf-all->pdflatex -> bibtex -> makeglossaries -> pdflatex*2",
       "tools": [
         "epstopdf-all",
         "pdflatex",
-        "biber",
+        "bibtex",
         "makeglossaries",
         "pdflatex",
         "pdflatex"
       ]
     },
     {
-      "name": "pdflatex*2",
+      "name": "pdflatex->bibtex->pdflatex*2",
       "tools": [
         "pdflatex",
+        "bibtex",
         "pdflatex",
+        "pdflatex"
       ]
     }
   ],
